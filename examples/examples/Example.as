@@ -1,7 +1,6 @@
 package examples
 {
 	import com.flashcore.g2d.core.Genome2D;
-	import com.flashcore.g2d.materials.G2DMaterialLibrary;
 
 	public class Example
 	{
@@ -14,12 +13,11 @@ package examples
 		}
 		
 		public function init():void {
-			
+			_cGenome.autoRender = true;
 		}
 		
 		public function dispose():void {
 			_cGenome.root.dispose();
-			G2DMaterialLibrary.clear();
 		}
 	}
 }

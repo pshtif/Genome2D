@@ -1,10 +1,9 @@
 package examples
 {
-	import com.flashcore.g2d.materials.G2DMaterialLibrary;
-	import com.flashcore.g2d.sprites.G2DContainer;
-	import com.flashcore.g2d.sprites.G2DMovieClip;
-	import com.flashcore.g2d.sprites.G2DSprite;
-	import com.flashcore.g2d.sprites.G2DTransform;
+	import com.flashcore.g2d.display.G2DContainer;
+	import com.flashcore.g2d.display.G2DMovieClip;
+	import com.flashcore.g2d.display.G2DSprite;
+	import com.flashcore.g2d.display.G2DTransform;
 	import com.flashcore.g2d.textures.G2DTexture;
 
 	public class CollisionExample extends Example
@@ -25,26 +24,21 @@ package examples
 		private var __cMineTexture:G2DTexture;
 		private var __cNinjaTexture:G2DTexture;
 		
-		static private const NINJA_COUNT:int = 20;
+		static private const NINJA_COUNT:int = 100;
 		
 		public function CollisionExample(p_wrapper:Genome2DExamples):void {
 			super(p_wrapper);
 		}
 		
 		override public function init():void {
-			_cWrapper.info = "<font color='#00FFFF'>CollisionExample\n"+
+			super.init();
+			_cWrapper.info = "<font color='#00FFFF'><b>CollisionExample</b>\n"+
 			"<font color='#FFFFFF'>Collision example where numbers collide with ninjas ;)\n"+
 			"<font color='#FFFF00'>You can use mouse to DRAG ninjas around.";
 			
 			__cMineTexture = G2DTexture.createFromBitmapAtlas((new MinesGFX()).bitmapData, XML(new MinesXML()));
 			
-			G2DMaterialLibrary.createMaterial("mines", __cMineTexture);
-			G2DMaterialLibrary.createMaterial("mine2", __cMineTexture.getSubTextureById("mine2"));
-			
 			__cNinjaTexture = G2DTexture.createFromBitmapAtlas((new NinjaGFX()).bitmapData, XML(new NinjaXML()));
-			
-			G2DMaterialLibrary.createMaterial("ninja", __cNinjaTexture);
-			G2DMaterialLibrary.createMaterial("ninja_stood", __cNinjaTexture.getSubTextureById("stood"));
 			
 			__cRotatingContainer = new G2DContainer();
 			__cRotatingContainer.x = 400;
@@ -82,9 +76,8 @@ package examples
 		}
 		
 		private function createMine(p_x:Number, p_y:Number):G2DMovieClip {
-			var clip:G2DMovieClip = new G2DMovieClip();
+			var clip:G2DMovieClip = new G2DMovieClip(__cMineTexture);
 			clip.setFrameRate(Math.random()*10+3);
-			clip.setMaterialById("mines");
 			clip.setFrames(new <String>["mine2", "mine3", "mine4", "mine5", "mine6", "mine7", "mine8", "mine9"]);
 			clip.gotoFrame(Math.random()*8);
 			clip.x = p_x;
@@ -93,9 +86,8 @@ package examples
 		}
 		
 		private function createNinja(p_x:Number, p_y:Number):G2DMovieClip {
-			var clip:G2DMovieClip = new G2DMovieClip();
+			var clip:G2DMovieClip = new G2DMovieClip(__cNinjaTexture);
 			clip.setFrameRate(Math.random()*10+3);
-			clip.setMaterialById("ninja");
 			clip.setFrames(new <String>["nw1", "nw2", "nw3", "nw2", "nw1", "stood", "nw4", "nw5", "nw6", "nw5", "nw4"]);
 			clip.gotoFrame(Math.random()*8);
 			clip.x = p_x;
@@ -109,6 +101,7 @@ package examples
 		}
 		
 		private function onClipMouseUp(p_target:G2DTransform, p_dispatcher:G2DTransform, p_x:Number, p_y:Number):void {
+			trace("onMouseUp");
 			p_dispatcher.stopDrag();
 		}
 		

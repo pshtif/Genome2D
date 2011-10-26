@@ -1,8 +1,7 @@
 package examples
 {
-	import com.flashcore.g2d.materials.G2DMaterialLibrary;
-	import com.flashcore.g2d.sprites.G2DContainer;
-	import com.flashcore.g2d.sprites.G2DMovieClip;
+	import com.flashcore.g2d.display.G2DContainer;
+	import com.flashcore.g2d.display.G2DMovieClip;
 	import com.flashcore.g2d.textures.G2DTexture;
 
 	public class HierarchyExample extends Example
@@ -16,20 +15,18 @@ package examples
 		
 		private var __cTexture:G2DTexture;
 		
-		static public const MAX_MILL_SPEED:Number = .05;
+		static public const MAX_MILL_SPEED:Number = .005;
 		
 		public function HierarchyExample(p_wrapper:Genome2DExamples):void {
 			super(p_wrapper);
 		}
 		
 		override public function init():void {
-			_cWrapper.info = "<font color='#00FFFF'>HierarchyExample\n"+
+			super.init();
+			_cWrapper.info = "<font color='#00FFFF'><b>HierarchyExample</b>\n"+
 			"<font color='#FFFFFF'>Simple hierarchy setup to showcase an example hierachical scene setup in G2D";
 			
 			__cTexture = G2DTexture.createFromBitmapAtlas((new MinesGFX()).bitmapData, XML(new MinesXML()));
-			
-			G2DMaterialLibrary.createMaterial("mines", __cTexture);
-			G2DMaterialLibrary.createMaterial("mine", __cTexture.getSubTextureById("mine2"));
 			
 			__aMills = new Vector.<G2DContainer>();
 			
@@ -56,9 +53,8 @@ package examples
 			container.x = p_x;
 			container.y = p_y;
 			for (var i:int = 0; i < p_size; ++i) {
-				var clip:G2DMovieClip = new G2DMovieClip();
+				var clip:G2DMovieClip = new G2DMovieClip(__cTexture);
 				clip.setFrameRate(Math.random()*10+3);
-				clip.setMaterialById("mines");
 				clip.setFrames(new <String>["mine2", "mine3", "mine4", "mine5", "mine6", "mine7", "mine8", "mine9"]);
 				clip.gotoFrame(Math.random()*8);
 				clip.x = -(p_size-1)*24/2 + i*24;

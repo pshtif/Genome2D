@@ -1,9 +1,8 @@
 package examples
 {
-	import com.flashcore.g2d.materials.G2DMaterialLibrary;
-	import com.flashcore.g2d.sprites.G2DMovieClip;
-	import com.flashcore.g2d.sprites.G2DSprite;
-	import com.flashcore.g2d.sprites.G2DTransform;
+	import com.flashcore.g2d.display.G2DMovieClip;
+	import com.flashcore.g2d.display.G2DSprite;
+	import com.flashcore.g2d.display.G2DTransform;
 	import com.flashcore.g2d.textures.G2DTexture;
 	
 	import flash.display.Sprite;
@@ -24,13 +23,12 @@ package examples
 		}
 		
 		override public function init():void {
-			_cWrapper.info = "<font color='#00FFFF'>MouseExample\n"+
+			super.init();
+			_cWrapper.info = "<font color='#00FFFF'><b>MouseExample</b>\n"+
 			"<font color='#FFFFFF'>In this example it showcases the mouse interactivity and its modes, green ninjas have pixel perfect mouse precision enabled where red ninjas don't and capture mouse events only using their geometry.\n"+
 			"<font color='#FFFF00'>You can switch mouse mode of a particular ninja by CLICKing on him.";
 			
 			__cTexture = G2DTexture.createFromBitmapAtlas((new NinjaGFX()).bitmapData, XML(new NinjaXML()));
-			
-			G2DMaterialLibrary.createMaterial("ninja", __cTexture);
 			
 			for (var i:int = 0; i<COUNT; ++i) {
 				var clip:G2DMovieClip = createClip(Math.random()*800, Math.random()*600);
@@ -45,9 +43,8 @@ package examples
 		}
 		
 		private function createClip(p_x:Number, p_y:Number):G2DMovieClip {
-			var clip:G2DMovieClip = new G2DMovieClip();
+			var clip:G2DMovieClip = new G2DMovieClip(__cTexture);
 			clip.setFrameRate(15);
-			clip.setMaterialById("ninja");
 			clip.setFrames(new <String>["nw1", "nw2", "nw3", "nw2", "nw1", "stood", "nw4", "nw5", "nw6", "nw5", "nw4"]);
 			clip.gotoFrame(Math.random()*8);
 			//clip.stop();
@@ -64,6 +61,7 @@ package examples
 
 			clip.onMouseOver.add(onClipMouseOver);
 			clip.onMouseOut.add(onClipMouseOut);
+			clip.onMouseUp.add(onMouseUp);
 			clip.onMouseClick.add(onClipMouseClick);
 			return clip;
 		}
@@ -88,6 +86,10 @@ package examples
 				p_dispatcher.green = 0;
 				p_dispatcher.blue = 0;
 			}
+		}
+		
+		private function onMouseUp(p_target:G2DTransform, p_dispatcher:G2DTransform, p_x:Number, p_y:Number):void {
+			trace("onMouseUp");
 		}
 	}
 }
