@@ -1,10 +1,10 @@
 package examples
 {
-	import com.flashcore.g2d.context.G2DContext;
+	import com.flashcore.g2d.components.G2DComponent;
+	import com.flashcore.g2d.components.G2DMovieClip;
+	import com.flashcore.g2d.components.G2DSprite;
+	import com.flashcore.g2d.core.G2DNode;
 	import com.flashcore.g2d.core.Genome2D;
-	import com.flashcore.g2d.display.G2DMovieClip;
-	import com.flashcore.g2d.display.G2DSprite;
-	import com.flashcore.g2d.display.G2DTransform;
 	import com.flashcore.g2d.g2d;
 	import com.flashcore.g2d.textures.G2DTexture;
 	
@@ -14,16 +14,11 @@ package examples
 	
 	public class BlittingExample extends Example
 	{
-		[Embed(source = "./assets/mines.xml", mimeType = "application/octet-stream")]
-		private static const MinesXML:Class;
-		[Embed(source = "./assets/crate.jpg")]
-		private static const CrateGFX:Class;
+		private var __cCrateTexture:G2DTexture;
 		
-		private var __cTexture:G2DTexture;
+		private const COUNT:int = 1000;
 		
-		private const COUNT:int = 500;
-		
-		private var __iClipCount:int;
+		private var __iBlitCount:int;
 		private var __bMove:Boolean = true;
 		
 		public function BlittingExample(p_wrapper:Genome2DExamples):void {
@@ -31,75 +26,81 @@ package examples
 		}
 		
 		private function updateInfo():void {
-			_cWrapper.info = "<font color='#00FFFF'><b>BlittingExample</b> [ "+__iClipCount+" images ]\n"+
-			"<font color='#FFFFFF'>This is a blitting example which uses blit() function instead of G2DSprites/G2DMovieClip instances, simply blits textures into random positions.\n"+
+			_cWrapper.info = "<font color='#00FFFF'><b>BlittingExample</b> [ "+__iBlitCount+" blitted images ]\n"+
+			"<font color='#FFFFFF'>This is a simple stress test example using blitting instead of render node list.\n"+
 			"<font color='#FFFF00'>Press ARROW UP to increase the number of blitted images and ARROW DOWN to decrease them.";
 		}
 		
+		/**
+		 * 	Initialize example
+		 */
 		override public function init():void {
 			super.init();
-			__cTexture = G2DTexture.createFromBitmapData((new CrateGFX()).bitmapData);
+	
+			// Create a G2D texture based on our embedded asset bitmap
+			__cCrateTexture = G2DTexture.createFromBitmapData("crateTexture", (new Assets.CrateGFX()).bitmapData);
 			
-			__iClipCount = COUNT;
+			// Set default number of blitted images
+			__iBlitCount = COUNT;
 			
+			// Hook up a key event
 			_cGenome.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			// Hook up an enter frame event
 			_cGenome.stage.addEventListener(Event.ENTER_FRAME, onEnterFrame);
-			// We need to disable auto render of G2D content when using blitting
-			_cGenome.autoRender = false;
+			// Turn off autoupdate/autorender of the scene, this is crucial for blitting composition
+			_cGenome.autoUpdate = false;
 			
+			// Update the text of an example
 			updateInfo();
 		}
 		
+		/**
+		 * 	Our enter frame callback for manual blitting
+		 */
+		private function onEnterFrame(event:Event):void {
+			// Initialize Genome rendering
+			_cGenome.begin();
+			
+			// Blit all the images we want
+			for (var i:int = 0; i<__iBlitCount; ++i) {
+				_cGenome.blit(Math.random()*800, Math.random()*600, __cCrateTexture);
+			}
+			
+			/**
+			 * 	If we wanted to update/render the render node list as well we could simply run __cGenome.update() here as well. 
+			 */
+			
+			// Finalize Genome rendering
+			_cGenome.end();
+		}
+		
+		/**
+		 * 	Dispose this example resources
+		 */
 		override public function dispose():void {
 			super.dispose();
 			
-			__cTexture.dispose();
+			__cCrateTexture.dispose();
 			
 			_cGenome.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			_cGenome.stage.removeEventListener(Event.ENTER_FRAME, onEnterFrame);
 		}
-		
-		private function addClips(p_count:int):void {
-			__iClipCount += p_count;
 
-			updateInfo();
-		}
-		
-		private function removeClips(p_count:int):void {
-			__iClipCount -= p_count;
-			if (__iClipCount<0) __iClipCount = 0;
-			
-			updateInfo();
-		}
-		
-		private function onEnterFrame(event:Event):void {
-			// Start genome rendering
-			_cGenome.start();
-			// Its faster to reference the genome context when blitting since this skips one function call
-			var context:G2DContext = _cGenome.getContext();
-			
-			for (var i:int = 0; i<__iClipCount; ++i) {
-				// Blit the textures to the screen, the funny thing is that if we removed the Math.random() calls it would be up to 2 times faster
-				// yes random is that slow ;)
-				context.blit(Math.random()*800, Math.random()*600, __cTexture);
-				//context.blit(100, 100, __cTexture);
-			}
-			// End genome rendering
-			_cGenome.end();
-		}
-		
+		/**
+		 * 	Keyboard event callback
+		 */
 		private function onKeyDown(event:KeyboardEvent):void {
 			switch (event.keyCode) {
 				case 38:
-					addClips(500);
+					__iBlitCount+=500;
 					break;
 				case 40:
-					removeClips(500);
-					break;
-				case 80:
-					__bMove = !__bMove;
+					__iBlitCount-=500;
+					if (__iBlitCount<0) __iBlitCount = 0;
 					break;
 			}
+			
+			updateInfo();
 		}
 	}
 }

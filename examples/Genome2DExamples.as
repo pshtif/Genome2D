@@ -3,11 +3,14 @@ package
 	import com.flashcore.g2d.context.bitmap.G2DBitmapContext;
 	import com.flashcore.g2d.context.blitting.G2DBlittingContext;
 	import com.flashcore.g2d.context.stage3d.G2DStage3DContext;
+	import com.flashcore.g2d.context.stage3d.G2DStage3DContextConfig;
+	import com.flashcore.g2d.core.G2DNode;
 	import com.flashcore.g2d.core.Genome2D;
 	
 	import examples.*;
 	
 	import flash.display.Sprite;
+	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
@@ -16,15 +19,14 @@ package
 	
 	import net.hires.debug.Stats;
 	
-	import org.osmf.media.DefaultMediaFactory;
-	
 	[SWF(backgroundColor="#000000", frameRate="60", width="800", height="600")]
 	public class Genome2DExamples extends Sprite
 	{
 		private var __aExamples:Vector.<Example> = new Vector.<Example>();
-		private var __iCurrentExample:int = 0;
+		private var __iCurrentExample:int = 9;
 		
-		private var __aContexts:Vector.<Class> = new <Class>[G2DStage3DContext, G2DBitmapContext, G2DBlittingContext];
+		private var __aContexts:Vector.<Class> = new <Class>[G2DStage3DContext, G2DStage3DContext, G2DBitmapContext, G2DBlittingContext];
+		private var __aContextsConfig:Vector.<Object> = new <Object>[{mode:G2DStage3DContextConfig.AUTO}, {mode:G2DStage3DContextConfig.SOFTWARE}, null, null];
 		private var __iCurrentContext:int = 0;
 		
 		private var __spUI:Sprite;
@@ -33,22 +35,32 @@ package
 		private var __tfInfo:TextField;
 		
 		public function set info(p_info:String):void {
-			__tfInfo.htmlText = p_info;
+			if (__tfInfo) __tfInfo.htmlText = p_info;
 		}
 		
 		public function Genome2DExamples() {
+			if (stage == null) this.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			else onAddedToStage(null);
+		}
+		
+		private function onAddedToStage(event:Event):void {
 			__aExamples.push(new BasicExample(this));
 			__aExamples.push(new MouseExample(this));
 			__aExamples.push(new HierarchyExample(this));
 			__aExamples.push(new CollisionExample(this));
+			__aExamples.push(new CameraInterpolateExample(this));
+			__aExamples.push(new CameraBasicExample(this));
+			__aExamples.push(new CameraMouseExample(this));
+			__aExamples.push(new CameraViewExample(this));
+			__aExamples.push(new TextureExample(this));
+			__aExamples.push(new ParticleExample(this));
 			__aExamples.push(new BlittingExample(this));
-			
 			createUI();
 			
 			// Setup a signal callback for initialization
 			Genome2D.getInstance().onInitialized.addOnce(onInitialized);
 			// Initialize genome with a selected renderer
-			Genome2D.getInstance().init(stage, __aContexts[__iCurrentContext]);
+			Genome2D.getInstance().init(stage, __aContexts[__iCurrentContext], __aContextsConfig[__iCurrentContext]);
 		}
 		
 		private function createUI():void {
@@ -80,7 +92,8 @@ package
 			__tfContext.background = true;
 			
 			var contextString:String = String(__aContexts[__iCurrentContext]);
-			__tfContext.htmlText = "[Press C to switch] Renderer: <b>"+contextString.substring(7, contextString.length-8)+"</b>";
+			var configString:String = (__aContextsConfig[__iCurrentContext] == null) ? "" : String(__aContextsConfig[__iCurrentContext].mode);
+			__tfContext.htmlText = "[Press C to switch] Renderer: <b>"+contextString.substring(7, contextString.length-8)+" "+configString.toUpperCase()+"</b>";
 			__spUI.addChild(__tfContext);
 			
 			dtf.align = TextFormatAlign.LEFT;
@@ -101,7 +114,7 @@ package
 			__spUI.addChild(new Stats());
 		}
 		
-		private function onInitialized():void {						
+		private function onInitialized():void {
 			__aExamples[__iCurrentExample].init();
 			
 			stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
@@ -119,10 +132,11 @@ package
 		private function nextContext():void {
 			++__iCurrentContext;
 			if (__iCurrentContext==__aContexts.length) __iCurrentContext = 0;
-			Genome2D.getInstance().init(stage, __aContexts[__iCurrentContext]);
+			Genome2D.getInstance().init(stage, __aContexts[__iCurrentContext], __aContextsConfig[__iCurrentContext]);
 			
 			var contextString:String = String(__aContexts[__iCurrentContext]);
-			__tfContext.htmlText = "[Press C to switch] Renderer: <b>"+contextString.substring(7, contextString.length-8)+"</b>";
+			var configString:String = (__aContextsConfig[__iCurrentContext] == null) ? "" : String(__aContextsConfig[__iCurrentContext].mode);
+			__tfContext.htmlText = "[Press C to switch] Renderer: <b>"+contextString.substring(7, contextString.length-8)+" "+configString.toUpperCase()+"</b>";
 		}
 		
 		private function onKeyUp(event:KeyboardEvent):void {

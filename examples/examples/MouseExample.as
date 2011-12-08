@@ -1,20 +1,18 @@
 package examples
 {
-	import com.flashcore.g2d.display.G2DMovieClip;
-	import com.flashcore.g2d.display.G2DSprite;
-	import com.flashcore.g2d.display.G2DTransform;
-	import com.flashcore.g2d.textures.G2DTexture;
+	import com.flashcore.g2d.components.G2DComponent;
+	import com.flashcore.g2d.components.G2DMovieClip;
+	import com.flashcore.g2d.components.G2DSprite;
+	import com.flashcore.g2d.core.G2DNode;
+	import com.flashcore.g2d.signals.G2DMouseSignal;
+	import com.flashcore.g2d.textures.G2DTextureAtlas;
+	import com.flashcore.g2d.textures.G2DTextureLibrary;
 	
 	import flash.display.Sprite;
 
 	public class MouseExample extends Example
 	{
-		[Embed(source = "./assets/ninja.xml", mimeType = "application/octet-stream")]
-		private static const NinjaXML:Class;
-		[Embed(source = "./assets/ninja.png")]
-		private static const NinjaGFX:Class;
-		
-		private var __cTexture:G2DTexture;
+		private var __cTexture:G2DTextureAtlas;
 		
 		private var COUNT:int = 100;
 		
@@ -28,11 +26,11 @@ package examples
 			"<font color='#FFFFFF'>In this example it showcases the mouse interactivity and its modes, green ninjas have pixel perfect mouse precision enabled where red ninjas don't and capture mouse events only using their geometry.\n"+
 			"<font color='#FFFF00'>You can switch mouse mode of a particular ninja by CLICKing on him.";
 			
-			__cTexture = G2DTexture.createFromBitmapAtlas((new NinjaGFX()).bitmapData, XML(new NinjaXML()));
+			__cTexture = G2DTextureAtlas.createFromBitmapDataAndXML("ninja", (new Assets.NinjaGFX()).bitmapData, XML(new Assets.NinjaXML()));
 			
 			for (var i:int = 0; i<COUNT; ++i) {
-				var clip:G2DMovieClip = createClip(Math.random()*800, Math.random()*600);
-				_cGenome.root.addChild(clip);
+				var node:G2DNode = createClip(Math.random()*800, Math.random()*600);
+				_cContainer.addChild(node);
 			}
 		}
 		
@@ -42,54 +40,52 @@ package examples
 			__cTexture.dispose();
 		}
 		
-		private function createClip(p_x:Number, p_y:Number):G2DMovieClip {
-			var clip:G2DMovieClip = new G2DMovieClip(__cTexture);
+		private function createClip(p_x:Number, p_y:Number):G2DNode {
+			var node:G2DNode = new G2DNode();
+			var clip:G2DMovieClip = node.addComponent(G2DMovieClip) as G2DMovieClip;
+			clip.setTextureAtlas(__cTexture);
 			clip.setFrameRate(15);
 			clip.setFrames(new <String>["nw1", "nw2", "nw3", "nw2", "nw1", "stood", "nw4", "nw5", "nw6", "nw5", "nw4"]);
 			clip.gotoFrame(Math.random()*8);
 			//clip.stop();
-			clip.x = p_x;
-			clip.y = p_y;
-			clip.scaleX = clip.scaleY = Math.random()*2+1;
-			clip.mouseEnabled = true;
+			node.transform.x = p_x;
+			node.transform.y = p_y;
+			node.transform.scaleX = node.transform.scaleY = Math.random()*2+1;
+			node.mouseEnabled = true;
 			if (Math.random()*2<1) {
 				clip.mousePixelEnabled = true;
-				clip.blue = clip.red = 0;
+				node.transform.blue = node.transform.red = 0;
 			} else {
-				clip.blue = clip.green = 0;
+				node.transform.blue = node.transform.green = 0;
 			}
 
-			clip.onMouseOver.add(onClipMouseOver);
-			clip.onMouseOut.add(onClipMouseOut);
-			clip.onMouseUp.add(onMouseUp);
-			clip.onMouseClick.add(onClipMouseClick);
-			return clip;
+			node.onMouseOver.add(onClipMouseOver);
+			node.onMouseOut.add(onClipMouseOut);
+			node.onMouseClick.add(onClipMouseClick);
+			return node;
 		}
 		
-		private function onClipMouseClick(p_target:G2DTransform, p_dispatcher:G2DTransform, p_x:Number, p_y:Number):void {
-			G2DSprite(p_dispatcher).mousePixelEnabled = !G2DSprite(p_dispatcher).mousePixelEnabled; 
+		private function onClipMouseClick(p_signal:G2DMouseSignal):void {
+			var sprite:G2DSprite = p_signal.dispatcher.getComponent(G2DMovieClip) as G2DMovieClip;
+			var val:Boolean = sprite.mousePixelEnabled;
+			sprite.mousePixelEnabled = !val; 
 		}
 		
-		private function onClipMouseOver(p_target:G2DTransform, p_dispatcher:G2DTransform, p_x:Number, p_y:Number):void {
-			//trace("over: "+p_dispatcher);
-			p_dispatcher.red = p_dispatcher.green = p_dispatcher.blue = 1;
+		private function onClipMouseOver(p_signal:G2DMouseSignal):void {
+			p_signal.dispatcher.transform.red = p_signal.dispatcher.transform.green = p_signal.dispatcher.transform.blue = 1;
 		}
 		
-		private function onClipMouseOut(p_target:G2DTransform, p_dispatcher:G2DTransform, p_x:Number, p_y:Number):void {
-			//trace("out: "+p_dispatcher);
-			if (G2DSprite(p_dispatcher).mousePixelEnabled) {
-				p_dispatcher.red = 0;
-				p_dispatcher.green = 1;
-				p_dispatcher.blue = 0;
+		private function onClipMouseOut(p_signal:G2DMouseSignal):void {
+			var sprite:G2DSprite = p_signal.dispatcher.getComponent(G2DMovieClip) as G2DMovieClip;
+			if (sprite.mousePixelEnabled) {
+				p_signal.dispatcher.transform.red = 0;
+				p_signal.dispatcher.transform.green = 1;
+				p_signal.dispatcher.transform.blue = 0;
 			} else {
-				p_dispatcher.red = 1;
-				p_dispatcher.green = 0;
-				p_dispatcher.blue = 0;
+				p_signal.dispatcher.transform.red = 1;
+				p_signal.dispatcher.transform.green = 0;
+				p_signal.dispatcher.transform.blue = 0;
 			}
-		}
-		
-		private function onMouseUp(p_target:G2DTransform, p_dispatcher:G2DTransform, p_x:Number, p_y:Number):void {
-			trace("onMouseUp");
 		}
 	}
 }
