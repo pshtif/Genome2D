@@ -11,6 +11,7 @@ package examples
 	public class ParticlesGPUExample extends Example
 	{
 		private var __cEmitterContainer:G2DNode;
+		private var __nRotation:Number = .005;
 		
 		public function ParticlesGPUExample(p_wrapper:Genome2DExamples):void {
 			super(p_wrapper);
@@ -38,9 +39,11 @@ package examples
 			__cEmitterContainer.transform.y = _iHeight/2;
 			_cContainer.addChild(__cEmitterContainer);
 			
-			createGPUEmitter(150,0,0,.4,1).initialize(5,0,0,Math.PI*2,100,200,1,2,.5,1,false,1,0,2000,3000,200);
+			createGPUEmitter(0,80,0,1,.4).initialize(5,100,100,0,200,400,.5,1.5,.1,.5,false,1,0,1000,2000,200);
 			
-			createGPUEmitter(-150,50,1,.4,0).initialize(5,0,100,0.5,300,300,1,2,.5,1,false,1,0,2000,3000,200);
+			createGPUEmitter(200,0,0,.4,1).initialize(5,0,0,Math.PI*2,100,200,1,2,.5,1,false,1,0,2000,3000,200);
+			
+			createGPUEmitter(-200,100,1,.4,0).initialize(5,0,100,0.5,300,300,1,2,.5,1,false,1,0,2000,3000,200);
 			
 			
 			updateInfo();
@@ -79,7 +82,9 @@ package examples
 		 * 	Update singal callback
 		 */
 		private function onUpdate(p_deltaTime:Number):void {
-			__cEmitterContainer.transform.rotation-=.02;
+			if (__cEmitterContainer.transform.rotation>0.4 || __cEmitterContainer.transform.rotation<-0.4) __nRotation = -__nRotation;
+				
+			__cEmitterContainer.transform.rotation-=__nRotation;
 		}
 		
 		/**
