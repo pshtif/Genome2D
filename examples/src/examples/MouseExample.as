@@ -2,10 +2,10 @@ package examples
 {
 	import assets.Assets;
 	
-	import com.flashcore.g2d.components.renderables.G2DMovieClip;
-	import com.flashcore.g2d.components.renderables.G2DTexturedQuad;
-	import com.flashcore.g2d.core.G2DNode;
-	import com.flashcore.g2d.signals.G2DMouseSignal;
+	import com.genome2d.components.renderables.GMovieClip;
+	import com.genome2d.components.renderables.GTexturedQuad;
+	import com.genome2d.core.GNode;
+	import com.genome2d.signals.GMouseSignal;
 
 	public class MouseExample extends Example
 	{
@@ -23,17 +23,17 @@ package examples
 			
 
 			for (var i:int = 0; i<COUNT; ++i) {
-				var node:G2DNode = createClip(Math.random()*_iWidth, Math.random()*_iHeight);
+				var node:GNode = createClip(Math.random()*_iWidth, Math.random()*_iHeight);
 				_cContainer.addChild(node);
 			}
 		}
 		
-		private function createClip(p_x:Number, p_y:Number):G2DNode {
-			var node:G2DNode = new G2DNode();
-			var clip:G2DMovieClip = node.addComponent(G2DMovieClip) as G2DMovieClip;
+		private function createClip(p_x:Number, p_y:Number):GNode {
+			var node:GNode = new GNode();
+			var clip:GMovieClip = node.addComponent(GMovieClip) as GMovieClip;
 			clip.setTextureAtlas(Assets.ninjaTextureAtlas);
-			clip.setFrameRate(15);
-			clip.setFrames(new <String>["nw1", "nw2", "nw3", "nw2", "nw1", "stood", "nw4", "nw5", "nw6", "nw5", "nw4"]);
+			clip.frameRate = 15;
+			clip.frames = ["nw1", "nw2", "nw3", "nw2", "nw1", "stood", "nw4", "nw5", "nw6", "nw5", "nw4"];
 			clip.gotoFrame(Math.random()*8);
 
 			node.transform.x = p_x;
@@ -53,18 +53,18 @@ package examples
 			return node;
 		}
 		
-		private function onClipMouseClick(p_signal:G2DMouseSignal):void {
-			var sprite:G2DTexturedQuad = p_signal.dispatcher.getComponent(G2DMovieClip) as G2DMovieClip;
+		private function onClipMouseClick(p_signal:GMouseSignal):void {
+			var sprite:GTexturedQuad = p_signal.dispatcher.getComponent(GMovieClip) as GMovieClip;
 			var val:Boolean = sprite.mousePixelEnabled;
 			sprite.mousePixelEnabled = !val; 
 		}
 		
-		private function onClipMouseOver(p_signal:G2DMouseSignal):void {
+		private function onClipMouseOver(p_signal:GMouseSignal):void {
 			p_signal.dispatcher.transform.red = p_signal.dispatcher.transform.green = p_signal.dispatcher.transform.blue = 1;
 		}
 		
-		private function onClipMouseOut(p_signal:G2DMouseSignal):void {
-			var sprite:G2DTexturedQuad = p_signal.dispatcher.getComponent(G2DMovieClip) as G2DMovieClip;
+		private function onClipMouseOut(p_signal:GMouseSignal):void {
+			var sprite:GTexturedQuad = p_signal.dispatcher.getComponent(GMovieClip) as GMovieClip;
 			if (sprite.mousePixelEnabled) {
 				p_signal.dispatcher.transform.red = 0;
 				p_signal.dispatcher.transform.green = 1;

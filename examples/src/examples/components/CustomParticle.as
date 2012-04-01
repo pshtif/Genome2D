@@ -1,11 +1,11 @@
 package examples.components
 {
-	import com.flashcore.g2d.components.G2DComponent;
-	import com.flashcore.g2d.core.G2DNode;
+	import com.genome2d.components.GComponent;
+	import com.genome2d.core.GNode;
 	
-	public class CustomParticle extends G2DComponent
+	public class CustomParticle extends GComponent
 	{
-		public function CustomParticle(p_node:G2DNode) {
+		public function CustomParticle(p_node:GNode) {
 			super(p_node);
 			
 			node.transform.red = Math.random();

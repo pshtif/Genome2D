@@ -2,9 +2,9 @@ package examples
 {
 	import assets.Assets;
 	
-	import com.flashcore.g2d.components.G2DCamera;
-	import com.flashcore.g2d.components.renderables.G2DMovieClip;
-	import com.flashcore.g2d.core.G2DNode;
+	import com.genome2d.components.GCamera;
+	import com.genome2d.components.renderables.GMovieClip;
+	import com.genome2d.core.GNode;
 	
 	import flash.events.KeyboardEvent;
 	
@@ -33,15 +33,15 @@ package examples
 			__iClipCount = 0;
 			addSprites(COUNT);
 			
-			_cGenome.onUpdated.add(onUpdate);
+			_cGenome.onPreUpdate.add(onUpdate);
 			
-			var camera:G2DCamera;
-			camera = _cCamera.getComponent(G2DCamera) as G2DCamera;
+			var camera:GCamera;
+			camera = _cCamera.getComponent(GCamera) as GCamera;
 			camera.normalizedViewWidth = 1/3;
 			camera.backgroundRed = .2;
 			
-			var cameraNode:G2DNode = new G2DNode("camera1");
-			camera = cameraNode.addComponent(G2DCamera) as G2DCamera;
+			var cameraNode:GNode = new GNode("camera1");
+			camera = cameraNode.addComponent(GCamera) as GCamera;
 			cameraNode.transform.x = _iWidth/2;
 			cameraNode.transform.y = _iHeight/2;
 			camera.normalizedViewWidth = 1/3;
@@ -51,8 +51,8 @@ package examples
 			camera.index = 1;
 			_cContainer.addChild(cameraNode);
 			
-			cameraNode = new G2DNode("camera2");
-			camera = cameraNode.addComponent(G2DCamera) as G2DCamera;
+			cameraNode = new GNode("camera2");
+			camera = cameraNode.addComponent(GCamera) as GCamera;
 			cameraNode.transform.x = _iWidth/2;
 			cameraNode.transform.y = _iHeight/2;
 			camera.normalizedViewWidth = 1/3;
@@ -68,15 +68,15 @@ package examples
 		override public function dispose():void {
 			super.dispose();
 
-			_cGenome.onUpdated.removeAll();
+			_cGenome.onPreUpdate.removeAll();
 		}
 		
-		private function createClip(p_x:Number, p_y:Number):G2DNode {
-			var node:G2DNode = new G2DNode();
-			var clip:G2DMovieClip = node.addComponent(G2DMovieClip) as G2DMovieClip;
+		private function createClip(p_x:Number, p_y:Number):GNode {
+			var node:GNode = new GNode();
+			var clip:GMovieClip = node.addComponent(GMovieClip) as GMovieClip;
 			clip.setTextureAtlas(Assets.mineTextureAtlas);
-			clip.setFrameRate(Math.random()*10+3);
-			clip.setFrames(new <String>["mine2", "mine3", "mine4", "mine5", "mine6", "mine7", "mine8", "mine9"]);
+			clip.frameRate = Math.random()*10+3;
+			clip.frames = ["mine2", "mine3", "mine4", "mine5", "mine6", "mine7", "mine8", "mine9"];
 			clip.gotoFrame(Math.random()*8);
 			node.transform.x = p_x;
 			node.transform.y = p_y;
@@ -88,7 +88,7 @@ package examples
 		private function addSprites(p_count:int):void {
 			__iClipCount += p_count;
 			for (var i:int = 0; i<p_count; ++i) {
-				var clip:G2DNode;
+				var clip:GNode;
 				
 				clip = createClip(Math.random()*_cGenome.stage.stageWidth, Math.random()*_cGenome.stage.stageHeight);
 				
@@ -101,16 +101,15 @@ package examples
 		private function removeSprites(p_count:int):void {
 			__iClipCount -= p_count;
 			if (__iClipCount<0) __iClipCount = 0;
-			for (var i:int = 0; i < p_count; ++i) {
-				if (_cContainer.numChildren == 0) break;
-				_cContainer.removeChildAt(0);
+			while (_cContainer.firstChild) {
+				_cContainer.removeChild(_cContainer.firstChild);
 			}
 			
 			updateInfo();
 		}
 		
 		private function onUpdate(p_deltaTime:Number):void {
-			var cameraNode:G2DNode;
+			var cameraNode:GNode;
 			
 			cameraNode = _cGenome.getCameraAt(0).node;
 			if (cameraNode.transform.x < 200 || cameraNode.transform.x>600) {
@@ -126,7 +125,7 @@ package examples
 			cameraNode.transform.rotation += __nCameraRotation;
 			
 			cameraNode = _cGenome.getCameraAt(2).node;
-			var camera:G2DCamera = cameraNode.getComponent(G2DCamera) as G2DCamera;
+			var camera:GCamera = cameraNode.getComponent(GCamera) as GCamera;
 			if (camera.zoom < .2 || camera.zoom>2) {
 				__nCameraZoom = -__nCameraZoom;
 			}			

@@ -1,7 +1,9 @@
 package assets
 {
-	import com.flashcore.g2d.textures.G2DTexture;
-	import com.flashcore.g2d.textures.G2DTextureAtlas;
+	import com.genome2d.textures.GTexture;
+	import com.genome2d.textures.GTextureAtlas;
+	import com.genome2d.textures.factories.GTextureAtlasFactory;
+	import com.genome2d.textures.factories.GTextureFactory;
 	
 	import flash.display.BitmapData;
 	import flash.display.Loader;
@@ -32,27 +34,27 @@ package assets
 		static public const ParticleGFX:Class;
 		
 	
-		static public var mineTextureAtlas:G2DTextureAtlas;
-		static public var ninjaTextureAtlas:G2DTextureAtlas;
-		static public var explosionTextureAtlas:G2DTexture;
+		static public var mineTextureAtlas:GTextureAtlas;
+		static public var ninjaTextureAtlas:GTextureAtlas;
+		static public var explosionTextureAtlas:GTexture;
 		
-		static public var crateTexture:G2DTexture;
-		static public var whiteTexture:G2DTexture;
-		static public var particleTexture:G2DTexture;
+		static public var crateTexture:GTexture;
+		static public var whiteTexture:GTexture;
+		static public var particleTexture:GTexture;
 		
-		static public var customTexture:G2DTexture;
+		static public var customTexture:GTexture;
 		
 		static public function init():void {
-			mineTextureAtlas = G2DTextureAtlas.createFromBitmapDataAndXML("mine", (new MinesGFX()).bitmapData, XML(new MinesXML()));
-			ninjaTextureAtlas = G2DTextureAtlas.createFromBitmapDataAndXML("ninja", (new NinjaGFX()).bitmapData, XML(new NinjaXML()));
+			mineTextureAtlas = GTextureAtlasFactory.createFromBitmapDataAndXML("mine", (new MinesGFX()).bitmapData, XML(new MinesXML()));
+			ninjaTextureAtlas = GTextureAtlasFactory.createFromBitmapDataAndXML("ninja", (new NinjaGFX()).bitmapData, XML(new NinjaXML()));
 
-			crateTexture = G2DTexture.createFromBitmapData("crate", (new CrateGFX()).bitmapData);
-			particleTexture = G2DTexture.createFromBitmapData("particle", new ParticleGFX().bitmapData);
+			crateTexture = GTextureFactory.createFromBitmapData("crate", (new CrateGFX()).bitmapData);
+			particleTexture = GTextureFactory.createFromBitmapData("particle", new ParticleGFX().bitmapData);
 			
 			var rect:BitmapData = new BitmapData(16, 16, false, 0xFFFFFF);
-			whiteTexture = G2DTexture.createFromBitmapData("white", rect);
+			whiteTexture = GTextureFactory.createFromBitmapData("white", rect);
 			
-			customTexture = G2DTexture.createFromBitmapData("custom", new BitmapData(256, 256, true, 0xFFFFFFFF));
+			customTexture = GTextureFactory.createFromBitmapData("custom", new BitmapData(256, 256, true, 0xFFFFFFFF));
 		}
 	}
 }

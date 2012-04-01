@@ -2,13 +2,14 @@ package examples
 {
 	import assets.Assets;
 	
-	import com.flashcore.g2d.components.G2DComponent;
-	import com.flashcore.g2d.components.renderables.G2DMovieClip;
-	import com.flashcore.g2d.components.renderables.G2DTexturedQuad;
-	import com.flashcore.g2d.core.G2DNode;
-	import com.flashcore.g2d.core.Genome2D;
-	import com.flashcore.g2d.g2d;
-	import com.flashcore.g2d.textures.G2DTexture;
+	import com.genome2d.components.GComponent;
+	import com.genome2d.components.renderables.GMovieClip;
+	import com.genome2d.components.renderables.GTexturedQuad;
+	import com.genome2d.context.GBlendMode;
+	import com.genome2d.core.GNode;
+	import com.genome2d.core.Genome2D;
+	import com.genome2d.g2d;
+	import com.genome2d.textures.GTexture;
 	
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -16,7 +17,7 @@ package examples
 	
 	public class BlittingExample extends Example
 	{
-		private const COUNT:int = 500;
+		private const COUNT:int = 10;
 		
 		private var __iBlitCount:int;
 		private var __bMove:Boolean = true;
@@ -63,10 +64,10 @@ package examples
 			// Initialize Genome rendering
 			_cGenome.beginRender();
 			
-			var texture:G2DTexture = Assets.crateTexture;
+			var texture:GTexture = Assets.crateTexture;
 			// Blit all the images we want
 			for (var i:int = 0; i<__iBlitCount; ++i) {
-				_cGenome.blit(Math.random()*_iWidth, Math.random()*_iHeight, texture);
+				_cGenome.blit(Math.random()*_iWidth, Math.random()*_iHeight, texture, GBlendMode.NONE);
 			}
 			
 			// This will render the node graph, we will call this so our UI is rendered
@@ -92,10 +93,10 @@ package examples
 		private function onKeyDown(event:KeyboardEvent):void {
 			switch (event.keyCode) {
 				case 38:
-					__iBlitCount+=500;
+					__iBlitCount+=10;
 					break;
 				case 40:
-					__iBlitCount-=500;
+					__iBlitCount-=10;
 					if (__iBlitCount<0) __iBlitCount = 0;
 					break;
 			}

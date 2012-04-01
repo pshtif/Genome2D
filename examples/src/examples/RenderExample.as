@@ -2,9 +2,11 @@ package examples
 {
 	import assets.Assets;
 	
-	import com.flashcore.g2d.components.renderables.G2DMovieClip;
-	import com.flashcore.g2d.components.renderables.G2DSprite;
-	import com.flashcore.g2d.core.G2DNode;
+	import com.genome2d.components.renderables.GColorQuad;
+	import com.genome2d.components.renderables.GMovieClip;
+	import com.genome2d.components.renderables.GSprite;
+	import com.genome2d.context.GBlendMode;
+	import com.genome2d.core.GNode;
 	
 	import flash.events.KeyboardEvent;
 	
@@ -24,7 +26,7 @@ package examples
 		private function updateInfo():void {
 			_cWrapper.info = "<font color='#00FFFF'><b>BasicExample</b> [ "+__iNodeCount+" G2DSprites ]\n"+
 			"<font color='#FFFFFF'>This is a simple stress test example rendering movieclips, each moveclip plays at its own custom framerate.\n"+
-			"<font color='#FFFF00'>Press ARROW UP to increase the number of movieclips and ARROW DOWN to decrease them, Press P to pause animation and movement.";
+			"<font color='#FFFF00'>Press ARROW UP to increase the number of sprites and ARROW DOWN to decrease them, Press A to pause movement.";
 		}
 		
 		override public function init():void {
@@ -34,7 +36,7 @@ package examples
 			addNodes(COUNT);
 			
 			_cGenome.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			_cGenome.onUpdated.add(onUpdate);
+			_cGenome.onPreUpdate.add(onUpdate);
 			
 			updateInfo();
 		}
@@ -43,11 +45,11 @@ package examples
 			super.dispose();
 			
 			_cGenome.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			_cGenome.onUpdated.removeAll();
+			_cGenome.onPreUpdate.removeAll();
 		}
 		
-		private function createNode(p_x:Number, p_y:Number):G2DNode {
-			var node:G2DNode = new G2DNode();
+		private function createNode(p_x:Number, p_y:Number):GNode {
+			var node:GNode = new GNode();
 			node.transform.x = p_x;
 			node.transform.y = p_y;
 			if (__bMove) node.transform.rotation = Math.random()*Math.PI;
@@ -58,16 +60,24 @@ package examples
 			return node;
 		}
 		
-		private function addSprite(p_node:G2DNode):void	{
-			var sprite:G2DSprite = p_node.addComponent(G2DSprite) as G2DSprite;
+		private function addSprite(p_node:GNode):void	{
+			var sprite:GSprite = p_node.addComponent(GSprite) as GSprite;
 			sprite.setTexture(Assets.crateTexture);
+			sprite.blendMode = GBlendMode.NONE;
 		}
 		
-		private function addClip(p_node:G2DNode):void {
-			var clip:G2DMovieClip = p_node.addComponent(G2DMovieClip) as G2DMovieClip;
+		private function addColor(p_node:GNode):void {
+			var color:GColorQuad = p_node.addComponent(GColorQuad) as GColorQuad;
+			p_node.transform.scaleX = p_node.transform.scaleY = 32;
+			var gray:Number = Math.random();
+			p_node.transform.setColor(gray, gray, gray);
+		}
+		
+		private function addClip(p_node:GNode):void {
+			var clip:GMovieClip = p_node.addComponent(GMovieClip) as GMovieClip;
 			clip.setTextureAtlas(Assets.mineTextureAtlas);
-			clip.setFrameRate(Math.random()*10+3);
-			clip.setFrames(new <String>["mine2", "mine3", "mine4", "mine5", "mine6", "mine7", "mine8", "mine9"]);
+			clip.frameRate = Math.random()*10+3;
+			clip.frames = ["mine2", "mine3", "mine4", "mine5", "mine6", "mine7", "mine8", "mine9"];
 			clip.gotoFrame(Math.random()*8);
 		}
 
@@ -75,7 +85,7 @@ package examples
 		private function addNodes(p_count:int):void {
 			__iNodeCount += p_count;
 			for (var i:int = 0; i<p_count; ++i) {
-				var clip:G2DNode;
+				var clip:GNode;
 				
 				clip = createNode(Math.random()*_iWidth, Math.random()*_iHeight);
 				
@@ -88,9 +98,10 @@ package examples
 		private function removeNodes(p_count:int):void {
 			__iNodeCount -= p_count;
 			if (__iNodeCount<0) __iNodeCount = 0;
-			for (var i:int = 0; i < p_count; ++i) {
-				if (_cContainer.numChildren == 0) break;
-				_cContainer.removeChildAt(0);
+			while (_cContainer.firstChild) {
+				p_count--;
+				_cContainer.removeChild(_cContainer.firstChild);
+				if (p_count == 0) break;
 			}
 			
 			updateInfo();
@@ -99,9 +110,8 @@ package examples
 		private function onUpdate(p_deltaTime:Number):void {
 			if (!__bMove) return;
 			/**/
-			var length:int = _cContainer.numChildren;
-			for (var i:int = 0; i<length; ++i) {
-				_cContainer.getChildAt(i).transform.rotation+=.1;
+			for (var node:GNode = _cContainer.firstChild; node; node = node.next) {
+				node.transform.rotation+=.1;
 			}
 			/**/
 		}
@@ -115,19 +125,15 @@ package examples
 					removeNodes(500);
 					break;
 				case 65:
-
-					break;
-				case 80:
 					__bMove = !__bMove;
-					var length:int = _cContainer.numChildren;
-					var i:int;
+					var node:GNode;
 					if (__bMove) { 
-						for (i = 0; i<length; ++i) {
-							_cContainer.getChildAt(i).transform.rotation=Math.random()*Math.PI;
+						for (node = _cContainer.firstChild; node; node = node.next) {
+							node.transform.rotation=Math.random()*Math.PI;
 						}
 					} else {
-						for (i = 0; i<length; ++i) {
-							_cContainer.getChildAt(i).transform.rotation=0;
+						for (node = _cContainer.firstChild; node; node = node.next) {
+							node.transform.rotation=0;
 						}
 					}
 					break;

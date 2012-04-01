@@ -2,9 +2,9 @@ package examples
 {
 	import assets.Assets;
 	
-	import com.flashcore.g2d.components.G2DCamera;
-	import com.flashcore.g2d.components.renderables.G2DMovieClip;
-	import com.flashcore.g2d.core.G2DNode;
+	import com.genome2d.components.GCamera;
+	import com.genome2d.components.renderables.GMovieClip;
+	import com.genome2d.core.GNode;
 	
 	import flash.events.KeyboardEvent;
 	
@@ -13,8 +13,8 @@ package examples
 		private const COUNT:int = 10;
 		static public const MAX_MILL_SPEED:Number = .005;
 		
-		private var __cRotatingContainer:G2DNode;
-		private var __cNinjaContainer:G2DNode;
+		private var __cRotatingContainer:GNode;
+		private var __cNinjaContainer:GNode;
 		
 		private var __iClipCount:int;
 		private var __nCameraMove:Number = 2;
@@ -34,37 +34,37 @@ package examples
 		override public function init():void {
 			super.init();
 	
-			__cRotatingContainer = new G2DNode();
+			__cRotatingContainer = new GNode();
 			__cRotatingContainer.mouseChildren = false;
 			__cRotatingContainer.transform.x = _iWidth/2;
 			__cRotatingContainer.transform.y = _iHeight/2;
 			for (var i:int = 0; i<23; ++i) {
-				var mine:G2DNode = createMine(-264+24*i, 0);
+				var mine:GNode = createMine(-264+24*i, 0);
 				mine.userData = false;
 				__cRotatingContainer.addChild(mine);
-				var mine:G2DNode = createMine(0, -265+24*i);
+				var mine:GNode = createMine(0, -265+24*i);
 				mine.userData = false;
 				__cRotatingContainer.addChild(mine);
 			}
 			_cContainer.addChild(__cRotatingContainer);
 			
 			
-			__cNinjaContainer = new G2DNode();
+			__cNinjaContainer = new GNode();
 			__cNinjaContainer.mouseChildren = false;
 			for (var i:int = 0; i<COUNT; ++i) {
-				var clip:G2DNode = createNinja(Math.random()*(_iWidth-200)+100,Math.random()*(_iHeight-100)+50);
+				var clip:GNode = createNinja(Math.random()*(_iWidth-200)+100,Math.random()*(_iHeight-100)+50);
 				__cNinjaContainer.addChild(clip);
 			}
 			_cContainer.addChild(__cNinjaContainer);
 			
 			_cGenome.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			_cGenome.onUpdated.add(onUpdate);
+			_cGenome.onPreUpdate.add(onUpdate);
 			
-			var camera:G2DCamera;
-			camera = _cCamera.getComponent(G2DCamera) as G2DCamera;
+			var camera:GCamera;
+			camera = _cCamera.getComponent(GCamera) as GCamera;
 			
-			var cameraNode:G2DNode = new G2DNode("camera1");
-			camera = cameraNode.addComponent(G2DCamera) as G2DCamera;
+			var cameraNode:GNode = new GNode("camera1");
+			camera = cameraNode.addComponent(GCamera) as GCamera;
 			cameraNode.transform.x = _iWidth/2;
 			cameraNode.transform.y = _iHeight/2;
 			camera.normalizedViewWidth = 1/3;
@@ -79,29 +79,29 @@ package examples
 		
 		override public function dispose():void {			
 			_cGenome.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			_cGenome.onUpdated.removeAll();
+			_cGenome.onPreUpdate.removeAll();
 			
 			super.dispose();
 		}
 		
-		private function createMine(p_x:Number, p_y:Number):G2DNode {
-			var node:G2DNode = new G2DNode();
-			var clip:G2DMovieClip = node.addComponent(G2DMovieClip) as G2DMovieClip;
+		private function createMine(p_x:Number, p_y:Number):GNode {
+			var node:GNode = new GNode();
+			var clip:GMovieClip = node.addComponent(GMovieClip) as GMovieClip;
 			clip.setTextureAtlas(Assets.mineTextureAtlas);
-			clip.setFrameRate(Math.random()*10+3);
-			clip.setFrames(new <String>["mine2", "mine3", "mine4", "mine5", "mine6", "mine7", "mine8", "mine9"]);
+			clip.frameRate = Math.random()*10+3;
+			clip.frames = ["mine2", "mine3", "mine4", "mine5", "mine6", "mine7", "mine8", "mine9"];
 			clip.gotoFrame(Math.random()*8);
 			node.transform.x = p_x;
 			node.transform.y = p_y;
 			return node;
 		}
 		
-		private function createNinja(p_x:Number, p_y:Number):G2DNode {
-			var node:G2DNode = new G2DNode();
-			var clip:G2DMovieClip = node.addComponent(G2DMovieClip) as G2DMovieClip;
+		private function createNinja(p_x:Number, p_y:Number):GNode {
+			var node:GNode = new GNode();
+			var clip:GMovieClip = node.addComponent(GMovieClip) as GMovieClip;
 			clip.setTextureAtlas(Assets.ninjaTextureAtlas);
-			clip.setFrameRate(Math.random()*10+3);
-			clip.setFrames(new <String>["nw1", "nw2", "nw3", "nw2", "nw1", "stood", "nw4", "nw5", "nw6", "nw5", "nw4"]);
+			clip.frameRate = Math.random()*10+3;
+			clip.frames = ["nw1", "nw2", "nw3", "nw2", "nw1", "stood", "nw4", "nw5", "nw6", "nw5", "nw4"];
 			clip.gotoFrame(Math.random()*8);
 			node.transform.x = p_x;
 			node.transform.y = p_y;
@@ -109,10 +109,10 @@ package examples
 		}
 		
 		private function onUpdate(p_deltaTime:Number):void {
-			var cameraNode:G2DNode;
+			var cameraNode:GNode;
 			
 			cameraNode = _cGenome.getCameraAt(1).node;
-			var camera:G2DCamera = cameraNode.getComponent(G2DCamera) as G2DCamera;
+			var camera:GCamera = cameraNode.getComponent(GCamera) as GCamera;
 			if (camera.normalizedViewX <= 0 || camera.normalizedViewX >= 2/3) {
 				__nCameraMove = -__nCameraMove;
 			}
@@ -125,14 +125,12 @@ package examples
 			var j:int;
 			var c:Boolean = false;
 			
-			for (i = 0; i<__cNinjaContainer.numChildren; ++i) {
+			for (var ninja:GNode = __cNinjaContainer.firstChild; ninja; ninja = ninja.next) {
 				c = false;
-				var ninja:G2DNode = __cNinjaContainer.getChildAt(i) as G2DNode;
-				var ninjaClip:G2DMovieClip = ninja.getComponent(G2DMovieClip) as G2DMovieClip;
-				for (j = 0; j<__cRotatingContainer.numChildren; ++j) {
-					var mine:G2DNode = __cRotatingContainer.getChildAt(j) as G2DNode;
+				var ninjaClip:GMovieClip = ninja.getComponent(GMovieClip) as GMovieClip;
+				for (var mine:GNode = __cRotatingContainer.firstChild; mine; mine = mine.next) {
 					if (c && mine.userData) continue;
-					var mineClip:G2DMovieClip = mine.getComponent(G2DMovieClip) as G2DMovieClip;
+					var mineClip:GMovieClip = mine.getComponent(GMovieClip) as GMovieClip;
 					var a:Boolean = ninjaClip.hitTestObject(mineClip);
 					mine.userData = a || mine.userData;
 					c = a || c;
@@ -145,8 +143,7 @@ package examples
 				}
 			}
 			
-			for (i = 0; i<__cRotatingContainer.numChildren; ++i) {
-				var mine:G2DNode = __cRotatingContainer.getChildAt(i) as G2DNode; 
+			for (var mine:GNode = __cRotatingContainer.firstChild; mine; mine = mine.next) {
 				if (mine.userData) {
 					mine.transform.green = mine.transform.blue = 0;
 					mine.userData = false;

@@ -2,9 +2,9 @@ package examples
 {
 	import assets.Assets;
 	
-	import com.flashcore.g2d.components.renderables.G2DSprite;
-	import com.flashcore.g2d.core.G2DNode;
-	import com.flashcore.g2d.signals.G2DMouseSignal;
+	import com.genome2d.components.renderables.GSprite;
+	import com.genome2d.core.GNode;
+	import com.genome2d.signals.GMouseSignal;
 	import com.greensock.TweenLite;
 	
 	import flash.display.Shape;
@@ -32,11 +32,11 @@ package examples
 	
 			
 			
-			var node:G2DNode = new G2DNode();
+			var node:GNode = new GNode();
 			node.transform.x = _iWidth/2;
 			node.transform.y = _iHeight/2;
 			node.transform.scaleX = node.transform.scaleY = 1.5;
-			var sprite:G2DSprite = node.addComponent(G2DSprite) as G2DSprite;
+			var sprite:GSprite = node.addComponent(GSprite) as GSprite;
 			sprite.setTexture(Assets.customTexture);
 			node.mouseEnabled = true;
 			node.onMouseMove.add(onMouseMove);
@@ -51,20 +51,20 @@ package examples
 			createColor(_iWidth-40,340, 0, 1, 1);
 			
 			_cGenome.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			_cGenome.onUpdated.add(onUpdate);
+			_cGenome.onPreUpdate.add(onUpdate);
 			
 			updateInfo();
 		}
 		
 		private function createColor(p_x:int, p_y:int, p_red:Number, p_green:Number, p_blue:Number):void {
-			var node:G2DNode = new G2DNode();
+			var node:GNode = new GNode();
 			node.transform.x = p_x;
 			node.transform.y = p_y;
 			node.transform.red = p_red;
 			node.transform.green = p_green;
 			node.transform.blue = p_blue;
 			node.transform.rotation = Math.random()*Math.PI*2;
-			var sprite:G2DSprite = node.addComponent(G2DSprite) as G2DSprite;
+			var sprite:GSprite = node.addComponent(GSprite) as GSprite;
 			sprite.setTexture(Assets.whiteTexture);
 			node.mouseEnabled = true;
 			node.onMouseClick.add(onColorClick);
@@ -77,10 +77,10 @@ package examples
 			super.dispose();
 			
 			_cGenome.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			_cGenome.onUpdated.removeAll();
+			_cGenome.onPreUpdate.removeAll();
 		}
 		
-		private function onMouseMove(p_signal:G2DMouseSignal):void {
+		private function onMouseMove(p_signal:GMouseSignal):void {
 			if (!p_signal.buttonDown) return;
 			var shape:Shape = new Shape();
 			shape.graphics.beginFill(__iColor);
@@ -93,23 +93,23 @@ package examples
 			Assets.customTexture.invalidate();
 		}
 		
-		private function onColorClick(p_signal:G2DMouseSignal):void {
+		private function onColorClick(p_signal:GMouseSignal):void {
 			__iColor = ((p_signal.dispatcher.transform.red*255)<<16) + ((p_signal.dispatcher.transform.green*255)<<8) + (p_signal.dispatcher.transform.blue*255);
 		}
 		
-		private function onColorOver(p_signal:G2DMouseSignal):void {
-			TweenLite.to(p_signal.dispatcher.transform, .25, {scaleX:2, scaleY:2});
+		private function onColorOver(p_signal:GMouseSignal):void {
+			TweenLite.to(p_signal.dispatcher, .25, {scaleX:2, scaleY:2});
 		}
 		
-		private function onColorOut(p_signal:G2DMouseSignal):void {
-			TweenLite.to(p_signal.dispatcher.transform, .25, {scaleX:1, scaleY:1});
+		private function onColorOut(p_signal:GMouseSignal):void {
+			TweenLite.to(p_signal.dispatcher, .25, {scaleX:1, scaleY:1});
 		}
 		
 		private function onUpdate(p_deltaTime:Number):void {
 			if (!__bMove) return;
 			var length:int = _cContainer.numChildren;
-			for (var i:int = 0; i<length; ++i) {
-				_cContainer.getChildAt(i).transform.rotation+=.01;
+			for (var node:GNode = _cContainer.firstChild; node; node = node.next) {
+				node.transform.rotation+=.01;
 			}
 		}
 		

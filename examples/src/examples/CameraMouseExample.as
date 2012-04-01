@@ -2,11 +2,11 @@ package examples
 {
 	import assets.Assets;
 	
-	import com.flashcore.g2d.components.G2DCamera;
-	import com.flashcore.g2d.components.renderables.G2DMovieClip;
-	import com.flashcore.g2d.components.renderables.G2DTexturedQuad;
-	import com.flashcore.g2d.core.G2DNode;
-	import com.flashcore.g2d.signals.G2DMouseSignal;
+	import com.genome2d.components.GCamera;
+	import com.genome2d.components.renderables.GMovieClip;
+	import com.genome2d.components.renderables.GTexturedQuad;
+	import com.genome2d.core.GNode;
+	import com.genome2d.signals.GMouseSignal;
 	
 	public class CameraMouseExample extends Example
 	{
@@ -31,21 +31,21 @@ package examples
 			super.init();
 	
 			for (var i:int = 0; i<COUNT; ++i) {
-				var node:G2DNode = createClip(Math.random()*_iWidth, Math.random()*_iHeight);
+				var node:GNode = createClip(Math.random()*_iWidth, Math.random()*_iHeight);
 				_cContainer.addChild(node);
 			}
 			
-			_cGenome.onUpdated.add(onUpdate);
+			_cGenome.onPreUpdate.add(onUpdate);
 			
-			var camera:G2DCamera;
-			camera = _cCamera.getComponent(G2DCamera) as G2DCamera;
+			var camera:GCamera;
+			camera = _cCamera.getComponent(GCamera) as GCamera;
 			camera.normalizedViewWidth = .5;
 			camera.normalizedViewHeight = .5;
 			camera.normalizedViewX = 0;
 			camera.normalizedViewY = 0;
 			
-			var cameraNode:G2DNode = new G2DNode("camera1");
-			camera = cameraNode.addComponent(G2DCamera) as G2DCamera;
+			var cameraNode:GNode = new GNode("camera1");
+			camera = cameraNode.addComponent(GCamera) as GCamera;
 			cameraNode.transform.x = _iWidth/2;
 			cameraNode.transform.y = _iHeight/2;
 			cameraNode.transform.rotation = Math.PI/4;
@@ -57,8 +57,8 @@ package examples
 			camera.index = 1;
 			_cContainer.addChild(cameraNode);
 			
-			cameraNode = new G2DNode("camera2");
-			camera = cameraNode.addComponent(G2DCamera) as G2DCamera;
+			cameraNode = new GNode("camera2");
+			camera = cameraNode.addComponent(GCamera) as GCamera;
 			cameraNode.transform.x = _iWidth/2;
 			cameraNode.transform.y = _iHeight/2;
 			camera.normalizedViewWidth = .5;
@@ -70,8 +70,8 @@ package examples
 			camera.index = 2;
 			_cContainer.addChild(cameraNode);
 			
-			cameraNode = new G2DNode("camera3");
-			camera = cameraNode.addComponent(G2DCamera) as G2DCamera;
+			cameraNode = new GNode("camera3");
+			camera = cameraNode.addComponent(GCamera) as GCamera;
 			cameraNode.transform.x = _iWidth/2;
 			cameraNode.transform.y = _iHeight/2;
 			camera.normalizedViewWidth = .5;
@@ -88,15 +88,15 @@ package examples
 		override public function dispose():void {
 			super.dispose();
 				
-			_cGenome.onUpdated.removeAll();
+			_cGenome.onPreUpdate.removeAll();
 		}
 		
-		private function createClip(p_x:Number, p_y:Number):G2DNode {
-			var node:G2DNode = new G2DNode();
-			var clip:G2DMovieClip = node.addComponent(G2DMovieClip) as G2DMovieClip;
+		private function createClip(p_x:Number, p_y:Number):GNode {
+			var node:GNode = new GNode();
+			var clip:GMovieClip = node.addComponent(GMovieClip) as GMovieClip;
 			clip.setTextureAtlas(Assets.ninjaTextureAtlas);
-			clip.setFrameRate(15);
-			clip.setFrames(new <String>["nw1", "nw2", "nw3", "nw2", "nw1", "stood", "nw4", "nw5", "nw6", "nw5", "nw4"]);
+			clip.frameRate = 15;
+			clip.frames = ["nw1", "nw2", "nw3", "nw2", "nw1", "stood", "nw4", "nw5", "nw6", "nw5", "nw4"];
 			clip.gotoFrame(Math.random()*8);
 			//clip.stop();
 			node.transform.x = p_x;
@@ -116,18 +116,18 @@ package examples
 			return node;
 		}
 		
-		private function onClipMouseClick(p_signal:G2DMouseSignal):void {
-			var sprite:G2DTexturedQuad = p_signal.dispatcher.getComponent(G2DMovieClip) as G2DMovieClip;
+		private function onClipMouseClick(p_signal:GMouseSignal):void {
+			var sprite:GTexturedQuad = p_signal.dispatcher.getComponent(GMovieClip) as GMovieClip;
 			var val:Boolean = sprite.mousePixelEnabled;
 			sprite.mousePixelEnabled = !val; 
 		}
 		
-		private function onClipMouseOver(p_signal:G2DMouseSignal):void {
+		private function onClipMouseOver(p_signal:GMouseSignal):void {
 			p_signal.dispatcher.transform.red = p_signal.dispatcher.transform.green = p_signal.dispatcher.transform.blue = 1;
 		}
 		
-		private function onClipMouseOut(p_signal:G2DMouseSignal):void {
-			var sprite:G2DTexturedQuad = p_signal.dispatcher.getComponent(G2DMovieClip) as G2DMovieClip;
+		private function onClipMouseOut(p_signal:GMouseSignal):void {
+			var sprite:GTexturedQuad = p_signal.dispatcher.getComponent(GMovieClip) as GMovieClip;
 
 			if (sprite.mousePixelEnabled) {
 				p_signal.dispatcher.transform.red = 0;
@@ -141,7 +141,7 @@ package examples
 		}
 		
 		private function onUpdate(p_deltaTime:Number):void {
-			var cameraNode:G2DNode;
+			var cameraNode:GNode;
 			
 			cameraNode = _cGenome.getCameraAt(3).node;
 			if (cameraNode.transform.x < 200 || cameraNode.transform.x>600) {
@@ -149,7 +149,7 @@ package examples
 			}
 			cameraNode.transform.rotation += __nCameraRotation;
 			
-			var camera:G2DCamera = cameraNode.getComponent(G2DCamera) as G2DCamera;
+			var camera:GCamera = cameraNode.getComponent(GCamera) as GCamera;
 			if (camera.zoom < .2 || camera.zoom>2) {
 				__nCameraZoom = -__nCameraZoom;
 			}			

@@ -2,11 +2,12 @@ package examples
 {
 	import assets.Assets;
 	
-	import com.flashcore.g2d.components.G2DEmitter;
-	import com.flashcore.g2d.components.G2DParticle;
-	import com.flashcore.g2d.components.renderables.G2DSprite;
-	import com.flashcore.g2d.context.G2DBlendMode;
-	import com.flashcore.g2d.core.G2DNode;
+	import com.genome2d.components.GComponent;
+	import com.genome2d.components.particles.GEmitter;
+	import com.genome2d.components.particles.GParticle;
+	import com.genome2d.components.renderables.GSprite;
+	import com.genome2d.context.GBlendMode;
+	import com.genome2d.core.GNode;
 	
 	import examples.components.CustomParticle;
 	
@@ -18,7 +19,7 @@ package examples
 		private var __iSize:int = 16;
 		private var __bMove:Boolean = true;
 		
-		private var __cParticles:G2DNode;
+		private var __cParticles:GNode;
 		
 		public function ParticlesExample(p_wrapper:Genome2DExamples):void {
 			super(p_wrapper);
@@ -39,27 +40,25 @@ package examples
 			// Hook up a key event
 			_cGenome.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			// Hook up a Genome update signal
-			_cGenome.onUpdated.add(onUpdate);
+			_cGenome.onPreUpdate.add(onUpdate);
 			
 			// Create a particle for prototype
-			var particle:G2DNode = new G2DNode();
+			var particle:GNode = new GNode();
 			// Each particle needs to have G2DParticle component
-			particle.addComponent(G2DParticle);
+			particle.addComponent(GParticle);
 			// This is our custom component just for show, it actually only sets custom colors to each particle
 			particle.addComponent(CustomParticle);
 			// Add sprite texture for our particle
-			var sprite:G2DSprite = particle.addComponent(G2DSprite) as G2DSprite;
+			var sprite:GSprite = particle.addComponent(GSprite) as GSprite;
 			sprite.setTexture(Assets.particleTexture);
-			sprite.blendMode = G2DBlendMode.ADDITIVE;
+			sprite.blendMode = GBlendMode.ADDITIVE;
 			
 			// Create our particle emitter
-			__cParticles = new G2DNode("particles");
+			__cParticles = new GNode("particles");
 			__cParticles.mouseChildren = false;
-			var emitter:G2DEmitter = __cParticles.addComponent(G2DEmitter) as G2DEmitter;
+			var emitter:GEmitter = __cParticles.addComponent(GEmitter) as GEmitter;
 			// Set the particle prototype
 			emitter.setParticlePrototype(particle.getPrototype());
-			// This disables the coloring transforms particleRed/Green/Blue/Alpha since we want to implement coloring through custom component
-			emitter.useInitialParticleColoring = false;
 			// This means that generated particles will use world space instead of local space therefore moving the emitter will not move the already generated partciles
 			// Just for fun try to set it to false and you'll see
 			emitter.useWorldSpace = true;
@@ -70,14 +69,14 @@ package examples
 			// Maximum number of particles generated per second
 			emitter.maxEmission = 64;
 			// Maximum size of the particle, what this means is the scale of the prototype
-			emitter.maxScaleX = 8;
-			emitter.minScaleX = 2;
+			emitter.maxScaleX = 1;
+			emitter.minScaleX = 1;
 			// Maximum energy of a particle, this means particles will live for 2 seconds
 			emitter.maxEnergy = 2;
 			// Angle of emission, this will set a 360 degree emission
 			emitter.angle = Math.PI*2;
 			_cContainer.addChild(__cParticles);
-			
+		
 			/**
 			 * 	There are other properties of G2DEmitter that can be utilized, you can try them out as well
 			 */
@@ -92,7 +91,7 @@ package examples
 			super.dispose();
 			
 			_cGenome.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			_cGenome.onUpdated.removeAll();
+			_cGenome.onPreUpdate.removeAll();
 		}
 		
 		/**

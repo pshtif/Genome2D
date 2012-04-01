@@ -2,15 +2,15 @@ package examples
 {
 	import assets.Assets;
 	
-	import com.flashcore.g2d.components.renderables.G2DEmitterGPU;
-	import com.flashcore.g2d.context.G2DBlendMode;
-	import com.flashcore.g2d.core.G2DNode;
+	import com.genome2d.components.renderables.GEmitterGPU;
+	import com.genome2d.context.GBlendMode;
+	import com.genome2d.core.GNode;
 	
 	import flash.events.KeyboardEvent;
 	
 	public class ParticlesGPUExample extends Example
 	{
-		private var __cEmitterContainer:G2DNode;
+		private var __cEmitterContainer:GNode;
 		private var __nRotation:Number = .005;
 		
 		public function ParticlesGPUExample(p_wrapper:Genome2DExamples):void {
@@ -32,9 +32,9 @@ package examples
 			// Hook up a key event
 			_cGenome.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			// Hook up a Genome update signal
-			_cGenome.onUpdated.add(onUpdate);
+			_cGenome.onPreUpdate.add(onUpdate);
 			
-			__cEmitterContainer = new G2DNode();
+			__cEmitterContainer = new GNode();
 			__cEmitterContainer.transform.x = _iWidth/2;
 			__cEmitterContainer.transform.y = _iHeight/2;
 			_cContainer.addChild(__cEmitterContainer);
@@ -49,8 +49,8 @@ package examples
 			updateInfo();
 		}
 		
-		private function createGPUEmitter(p_x:Number, p_y:Number, p_red:Number, p_green:Number, p_blue:Number):G2DEmitterGPU {
-			var particles:G2DNode = new G2DNode(); 
+		private function createGPUEmitter(p_x:Number, p_y:Number, p_red:Number, p_green:Number, p_blue:Number):GEmitterGPU {
+			var particles:GNode = new GNode(); 
 			particles.transform.x = p_x;
 			particles.transform.y = p_y;
 			particles.transform.rotation = -Math.PI/2;
@@ -60,8 +60,8 @@ package examples
 			
 			particles.mouseChildren = false;
 			
-			var emitter:G2DEmitterGPU = particles.addComponent(G2DEmitterGPU) as G2DEmitterGPU;
-			emitter.blendMode = G2DBlendMode.ADDITIVE;
+			var emitter:GEmitterGPU = particles.addComponent(GEmitterGPU) as GEmitterGPU;
+			emitter.blendMode = GBlendMode.ADDITIVE;
 			emitter.setTexture(Assets.particleTexture);
 			__cEmitterContainer.addChild(particles);
 			
@@ -75,7 +75,7 @@ package examples
 			super.dispose();
 			
 			_cGenome.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			_cGenome.onUpdated.removeAll();
+			_cGenome.onPreUpdate.removeAll();
 		}
 		
 		/**

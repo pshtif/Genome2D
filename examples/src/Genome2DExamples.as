@@ -2,17 +2,16 @@ package
 {
 	import assets.Assets;
 	
-	import com.flashcore.g2d.components.G2DCamera;
-	import com.flashcore.g2d.components.renderables.G2DNativeObject;
-	import com.flashcore.g2d.components.renderables.G2DNativeText;
-	import com.flashcore.g2d.context.blitting.G2DBlittingContext;
-	import com.flashcore.g2d.context.stage3d.G2DStage3DContext;
-	import com.flashcore.g2d.context.stage3d.G2DStage3DContextConfig;
-	import com.flashcore.g2d.core.G2DNode;
-	import com.flashcore.g2d.core.Genome2D;
-	import com.flashcore.g2d.signals.G2DMouseSignal;
-	import com.flashcore.g2d.textures.G2DTextureBase;
-	import com.flashcore.g2d.textures.G2DTextureFilteringType;
+	import com.genome2d.components.GCamera;
+	import com.genome2d.components.renderables.flash.GFlashObject;
+	import com.genome2d.components.renderables.flash.GFlashText;
+	import com.genome2d.context.GContext;
+	import com.genome2d.context.GContextConfig;
+	import com.genome2d.core.GNode;
+	import com.genome2d.core.Genome2D;
+	import com.genome2d.signals.GMouseSignal;
+	import com.genome2d.textures.GTextureBase;
+	import com.genome2d.textures.GTextureFilteringType;
 	
 	import custom.Stats;
 	
@@ -33,27 +32,21 @@ package
 	import flash.ui.Multitouch;
 	import flash.ui.MultitouchInputMode;
 	
-	[SWF(backgroundColor="#0000FF", frameRate="60", width="800", height="600")]
+	[SWF(backgroundColor="#0000FF", frameRate="60", width="1024", height="768")]
 	public class Genome2DExamples extends Sprite
 	{	
 		private var __aExamples:Vector.<Example> = new Vector.<Example>();
 		private var __iCurrentExample:int = 0;
 		
-		private var __aContexts:Vector.<Class> = new <Class>[G2DBlittingContext];
-		private var __aContextsConfig:Vector.<Object> = new <Object>[null];
-		private var __aContextsNames:Vector.<String> = new <String>["Blitting (FlashPlayer 10)"];
-		private var __iCurrentContext:int = 0;
+		public var ui:GNode;
+		public var content:GNode;
 		
-		public var ui:G2DNode;
-		public var content:G2DNode;
-		
-		private var __cExample:G2DNativeText;
-		private var __cVersion:G2DNativeText;
-		private var __cContext:G2DNativeText;
-		private var __cInfo:G2DNativeText;
-		private var __cStats:G2DNativeObject;
-		private var __cHideable:G2DNode;
-		private var __cHideButton:G2DNativeText;
+		private var __cExample:GFlashText;
+		private var __cVersion:GFlashText;
+		private var __cInfo:GFlashText;
+		private var __cStats:GFlashObject;
+		private var __cHideable:GNode;
+		private var __cHideButton:GFlashText;
 		
 		public function getFps():uint {
 			return (__cStats.native as Stats).currentFps;
@@ -74,21 +67,12 @@ package
 			else onAddedToStage(null);
 		}
 		
-		private function initializeVersionDependency():void {
-			var version:int = Capabilities.version.split(" ")[1].split(",")[0];
-			if (version>10) {
-				__aContexts = new <Class>[G2DStage3DContext, G2DBlittingContext];
-				__aContextsConfig = new <Object>[{mode:G2DStage3DContextConfig.AUTO}, null];
-				__aContextsNames = new <String>["Stage3D (FlashPlayer 11)", "Blitting (FlashPlayer 10)"];
-			}
-		}
-		
 		private function onAddedToStage(event:Event):void {
 			stage.align = StageAlign.TOP_LEFT;
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			
-			initializeVersionDependency();
 			/**/
+			//__aExamples.push(new GraphicsExample(this));
 			__aExamples.push(new RenderExample(this));
 			__aExamples.push(new BlittingExample(this));
 			
@@ -104,13 +88,13 @@ package
 			__aExamples.push(new ParticlesGPUExample(this));
 			__aExamples.push(new VideoExample(this));
 			/**/
-			G2DTextureBase.defaultFilteringType = G2DTextureFilteringType.NEAREST;
+			GTextureBase.defaultFilteringType = GTextureFilteringType.NEAREST;
 			
 			// Setup a signal callback for initialization
 			Genome2D.getInstance().onInitialized.addOnce(onGenomeInitialized);
 			Genome2D.getInstance().onFailed.addOnce(onGenomeFailed);
 			// Initialize genome with a selected renderer
-			Genome2D.getInstance().init(stage, __aContexts[__iCurrentContext], __aContextsConfig[__iCurrentContext]);
+			Genome2D.getInstance().init(stage, new GContextConfig);
 			
 			Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
 		}
@@ -130,15 +114,14 @@ package
 			failed.width = stage.stageWidth;
 			failed.height = 30;
 			failed.y = (stage.stageHeight-30)/2;
-			var contextString:String = String(__aContexts[__iCurrentContext]);
-			failed.text = "Genome2D initialization failed device doesn't support "+contextString.substring(7, contextString.length-8)+" renderer.";
+			failed.text = "Genome2D initialization failed device doesn't support Stage3D renderer.";
 			addChild(failed);
 		}
 		
 		private function onGenomeInitialized():void {
 			Assets.init();
 				
-			content = new G2DNode("content");
+			content = new GNode("content");
 			Genome2D.getInstance().root.addChild(content);
 			
 			createUI();
@@ -149,8 +132,8 @@ package
 		}
 		
 		private function createUI():void {
-			ui = new G2DNode("ui");
-			var uiCamera:G2DCamera = ui.addComponent(G2DCamera) as G2DCamera;
+			ui = new GNode("ui");
+			var uiCamera:GCamera = ui.addComponent(GCamera) as GCamera;
 			uiCamera.mask = 2;
 			uiCamera.backgroundAlpha = 0;
 			ui.transform.x = stage.stageWidth/2;
@@ -158,16 +141,16 @@ package
 			ui.cameraGroup = 0xFFFFFF;
 			Genome2D.getInstance().root.addChild(ui);
 			
-			__cHideable = new G2DNode();
+			__cHideable = new GNode();
 			__cHideable.cameraGroup = 2;
 			ui.addChild(__cHideable);
 			
-			var statsNode:G2DNode = new G2DNode();
+			var statsNode:GNode = new GNode();
 			statsNode.transform.x = -stage.stageWidth/2+45;
 			statsNode.transform.y = -stage.stageHeight/2+60;
 			statsNode.cameraGroup = 2;
 			statsNode.mouseEnabled = true;
-			__cStats = statsNode.addComponent(G2DNativeObject) as G2DNativeObject;
+			__cStats = statsNode.addComponent(GFlashObject) as GFlashObject;
 			__cStats.native = new Stats();
 			__cStats.updateFrameRate = 5;
 			ui.addChild(statsNode);
@@ -184,9 +167,9 @@ package
 			dtf.align = TextFormatAlign.RIGHT;
 			dtf.bold = true;
 			
-			var labelNode:G2DNode = new G2DNode();
+			var labelNode:GNode = new GNode();
 			labelNode.cameraGroup = 2;
-			__cExample = labelNode.addComponent(G2DNativeText) as G2DNativeText;
+			__cExample = labelNode.addComponent(GFlashText) as GFlashText;
 			__cExample.textFormat = dtf;
 			__cExample.background = true;
 			__cExample.backgroundColor = 0xBBBBBB;
@@ -196,9 +179,9 @@ package
 			labelNode.transform.x = -stage.stageWidth/2+11+__cExample.width/2;
 			labelNode.transform.y = stage.stageHeight/2-112.5;
 			
-			var versionNode:G2DNode = new G2DNode();
+			var versionNode:GNode = new GNode();
 			versionNode.cameraGroup = 2;
-			__cVersion = versionNode.addComponent(G2DNativeText) as G2DNativeText;
+			__cVersion = versionNode.addComponent(GFlashText) as GFlashText;
 			__cVersion.textFormat = dtf;
 			__cVersion.background = true;
 			__cVersion.backgroundColor = 0xBBBBBB;
@@ -208,28 +191,14 @@ package
 			versionNode.transform.x = stage.stageWidth/2-10-__cVersion.width/2;
 			versionNode.transform.y = stage.stageHeight/2-112.5;
 			
-			dtf.bold = false;
-			var contextNode:G2DNode = new G2DNode();
-			contextNode.cameraGroup = 2;
-			__cContext = contextNode.addComponent(G2DNativeText) as G2DNativeText;
-			__cContext.textFormat = dtf;
-			__cContext.width = 190;
-			__cContext.autoSize = TextFieldAutoSize.LEFT;
-			__cContext.background = true;
-			__cHideable.addChild(contextNode);
-			
-			var contextString:String = String(__aContexts[__iCurrentContext]);
-			__cContext.htmlText = "[Press C to switch] Renderer: <b>"+__aContextsNames[__iCurrentContext]+"</b>";
-			__cContext.node.transform.x = stage.stageWidth/2-__cContext.width/2 - 10;
-			__cContext.node.transform.y = -stage.stageHeight/2+10+__cContext.height/2;
-			
+			dtf.bold = false;			
 			dtf.align = TextFormatAlign.LEFT;
 			
-			var infoNode:G2DNode = new G2DNode();
+			var infoNode:GNode = new GNode();
 			infoNode.transform.x = 0;
 			infoNode.transform.y = stage.stageHeight/2 - 55;		
 			infoNode.cameraGroup = 2;
-			__cInfo = infoNode.addComponent(G2DNativeText) as G2DNativeText;
+			__cInfo = infoNode.addComponent(GFlashText) as GFlashText;
 			__cInfo.textFormat = dtf;
 			__cInfo.textColor = 0xFFFFFF;
 			__cInfo.width = stage.stageWidth-20;
@@ -246,26 +215,26 @@ package
 			__cVersion.node.transform.y -= 45;
 			
 			createButton(stage.stageWidth/2 - 103, stage.stageHeight/2 - 32.5, "NEXT EXAMPLE", 0xFFFF00, nextExample, false);
-			createButton(stage.stageWidth/2 - 300.5, stage.stageHeight/2 - 32.5, "NEXT CONTEXT", 0xFFFF00, nextContext, true);
 			__cHideButton = createButton(-stage.stageWidth/2 + 78.5, stage.stageHeight/2 - 32, "HIDE INFO", 0x00FFFF, switchUIVisiblity, false);
 			
+			createButton(stage.stageWidth/2 - 600, stage.stageHeight/2 - 32.5, "ACTION", 0xFF0000, onActionClick, true);
 			createButton(stage.stageWidth/2 - 515, stage.stageHeight/2 - 32.5, "UP", 0xFF0000, onUpClick, true);
 			createButton(stage.stageWidth/2 - 450, stage.stageHeight/2 - 32.5, "DOWN", 0xFF0000, onDownClick, true);
 		}
 		
-		private function createButton(p_x:Number, p_y:Number, p_label:String, p_color:uint, p_callback:Function, p_hideable:Boolean):G2DNativeText {
+		private function createButton(p_x:Number, p_y:Number, p_label:String, p_color:uint, p_callback:Function, p_hideable:Boolean):GFlashText {
 			var dtf:TextFormat = new TextFormat("Arial", 24);
 			dtf.align = TextFormatAlign.RIGHT;
 			dtf.bold = true;
 			
-			var buttonNode:G2DNode = new G2DNode();
+			var buttonNode:GNode = new GNode();
 			buttonNode.mouseEnabled = true;
 			buttonNode.cameraGroup = 2;
 			buttonNode.transform.x = p_x;
 			buttonNode.transform.y = p_y;
 			buttonNode.onMouseClick.add(p_callback);
 			
-			var label:G2DNativeText = buttonNode.addComponent(G2DNativeText) as G2DNativeText;
+			var label:GFlashText = buttonNode.addComponent(GFlashText) as GFlashText;
 			label.textFormat = dtf;
 			label.background = true;
 			label.backgroundColor = p_color;
@@ -278,7 +247,7 @@ package
 			return label;
 		}
 		
-		private function nextExample(p_mouseSignal:G2DMouseSignal = null):void {
+		private function nextExample(p_mouseSignal:GMouseSignal = null):void {
 			__aExamples[__iCurrentExample].dispose();
 			++__iCurrentExample;
 			
@@ -290,24 +259,16 @@ package
 			__cExample.node.transform.x = -stage.stageWidth/2+10+__cExample.width/2;
 		}
 		
-		private function nextContext(p_mouseSignal:G2DMouseSignal = null):void {
-			++__iCurrentContext;
-			if (__iCurrentContext==__aContexts.length) __iCurrentContext = 0;
-			Genome2D.getInstance().init(stage, __aContexts[__iCurrentContext], __aContextsConfig[__iCurrentContext]);
-			
-			var contextString:String = String(__aContexts[__iCurrentContext]);
-			var configString:String = (__aContextsConfig[__iCurrentContext] == null) ? "" : String(__aContextsConfig[__iCurrentContext].mode);
-			if (__cContext == null) return;
-			__cContext.htmlText = "[Press C to switch] Renderer: <b>"+__aContextsNames[__iCurrentContext]+"</b>";
-			__cContext.node.transform.x = stage.stageWidth/2-__cContext.width/2 - 10;
-		}
-		
-		private function onUpClick(signal:G2DMouseSignal):void {
+		private function onUpClick(signal:GMouseSignal):void {
 			stage.dispatchEvent(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, false, 0, 38));
 		}
 		
-		private function onDownClick(signal:G2DMouseSignal):void {
+		private function onDownClick(signal:GMouseSignal):void {
 			stage.dispatchEvent(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, false, 0, 40));
+		}
+		
+		private function onActionClick(signal:GMouseSignal):void {
+			stage.dispatchEvent(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, false, 0, 65));
 		}
 		
 		private function onKeyUp(event:KeyboardEvent):void {
@@ -316,7 +277,6 @@ package
 					nextExample();
 					break;
 				case 67:
-					nextContext();
 					break;
 				case 72:
 					switchUIVisiblity();
@@ -324,7 +284,7 @@ package
 			}
 		}
 		
-		private function switchUIVisiblity(p_mouseSignal:G2DMouseSignal = null):void {
+		private function switchUIVisiblity(p_mouseSignal:GMouseSignal = null):void {
 			__cHideable.active = !__cHideable.active;
 
 			if (__cHideable.active) {
