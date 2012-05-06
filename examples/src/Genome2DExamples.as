@@ -5,7 +5,6 @@ package
 	import com.genome2d.components.GCamera;
 	import com.genome2d.components.renderables.flash.GFlashObject;
 	import com.genome2d.components.renderables.flash.GFlashText;
-	import com.genome2d.context.GContext;
 	import com.genome2d.context.GContextConfig;
 	import com.genome2d.core.GNode;
 	import com.genome2d.core.Genome2D;
@@ -29,10 +28,11 @@ package
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
+	import flash.ui.Keyboard;
 	import flash.ui.Multitouch;
 	import flash.ui.MultitouchInputMode;
 	
-	[SWF(backgroundColor="#0000FF", frameRate="60", width="1024", height="768")]
+	[SWF(backgroundColor="#000000", frameRate="60", width="800", height="600")]
 	public class Genome2DExamples extends Sprite
 	{	
 		private var __aExamples:Vector.<Example> = new Vector.<Example>();
@@ -67,34 +67,49 @@ package
 			else onAddedToStage(null);
 		}
 		
+		private function sortOnDepth(a:Object, b:Object):Number {
+			var adepth:Number = a.depth;
+			var bdepth:Number = b.depth;
+			
+			if(adepth > bdepth) {
+				return 1;
+			} else if(adepth < bdepth) {
+				return -1;
+			} else  {
+				//aPrice == bPrice
+				return 0;
+			}
+		}
+		
 		private function onAddedToStage(event:Event):void {
 			stage.align = StageAlign.TOP_LEFT;
 			stage.scaleMode = StageScaleMode.NO_SCALE;
-			
-			/**/
-			//__aExamples.push(new GraphicsExample(this));
+		
 			__aExamples.push(new RenderExample(this));
 			__aExamples.push(new BlittingExample(this));
-			
 			__aExamples.push(new MouseExample(this));
 			__aExamples.push(new HierarchyExample(this));
 			__aExamples.push(new CollisionExample(this));
 			__aExamples.push(new CameraInterpolateExample(this));
-			__aExamples.push(new CameraBasicExample(this));
+			__aExamples.push(new CameraViewPortsExample(this));
 			__aExamples.push(new CameraMouseExample(this));
 			__aExamples.push(new CameraViewExample(this));
 			__aExamples.push(new TextureExample(this));
 			__aExamples.push(new ParticlesExample(this));
 			__aExamples.push(new ParticlesGPUExample(this));
-			__aExamples.push(new VideoExample(this));
+			__aExamples.push(new VideoExample(this));		
+			__aExamples.push(new DepthSortExample(this));
 			/**/
 			GTextureBase.defaultFilteringType = GTextureFilteringType.NEAREST;
 			
+			Genome2D.getInstance().autoResize = true;
 			// Setup a signal callback for initialization
 			Genome2D.getInstance().onInitialized.addOnce(onGenomeInitialized);
 			Genome2D.getInstance().onFailed.addOnce(onGenomeFailed);
 			// Initialize genome with a selected renderer
-			Genome2D.getInstance().init(stage, new GContextConfig);
+			var config:GContextConfig = new GContextConfig();
+			config.separateNoAlphaShaders = true;
+			Genome2D.getInstance().init(stage, config);
 			
 			Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
 		}
@@ -138,21 +153,21 @@ package
 			uiCamera.backgroundAlpha = 0;
 			ui.transform.x = stage.stageWidth/2;
 			ui.transform.y = stage.stageHeight/2;
-			ui.cameraGroup = 0xFFFFFF;
+			ui.cameraGroup = 2;
 			Genome2D.getInstance().root.addChild(ui);
 			
 			__cHideable = new GNode();
 			__cHideable.cameraGroup = 2;
 			ui.addChild(__cHideable);
 			
-			var statsNode:GNode = new GNode();
+			var statsNode:GNode = new GNode("stats");
 			statsNode.transform.x = -stage.stageWidth/2+45;
 			statsNode.transform.y = -stage.stageHeight/2+60;
 			statsNode.cameraGroup = 2;
-			statsNode.mouseEnabled = true;
 			__cStats = statsNode.addComponent(GFlashObject) as GFlashObject;
+			__cStats.node.active = false;
 			__cStats.native = new Stats();
-			__cStats.updateFrameRate = 5;
+			__cStats.updateFrameRate = 1;
 			ui.addChild(statsNode);
 			
 			createDesktopUI();
@@ -281,6 +296,9 @@ package
 				case 72:
 					switchUIVisiblity();
 					break;
+				case Keyboard.S:
+					Genome2D.getInstance().context.config.enableStats = !Genome2D.getInstance().context.config.enableStats;
+					break;
 			}
 		}
 		
@@ -293,5 +311,5 @@ package
 				if (__cHideButton) __cHideButton.text = "SHOW INFO";
 			}
 		}
-	}
+	}  
 }

@@ -5,7 +5,10 @@ package examples
 	import com.genome2d.components.renderables.GMovieClip;
 	import com.genome2d.components.renderables.GTexturedQuad;
 	import com.genome2d.core.GNode;
+	import com.genome2d.core.Genome2D;
 	import com.genome2d.signals.GMouseSignal;
+	
+	import flash.geom.Rectangle;
 
 	public class MouseExample extends Example
 	{
@@ -21,15 +24,14 @@ package examples
 			"<font color='#FFFFFF'>In this example it showcases the mouse interactivity and its modes, green ninjas have pixel perfect mouse precision enabled where red ninjas don't and capture mouse events only using their geometry.\n"+
 			"<font color='#FFFF00'>You can switch mouse mode of a particular ninja by CLICKing on him.";
 			
-
 			for (var i:int = 0; i<COUNT; ++i) {
 				var node:GNode = createClip(Math.random()*_iWidth, Math.random()*_iHeight);
 				_cContainer.addChild(node);
-			}
+			}			
 		}
 		
 		private function createClip(p_x:Number, p_y:Number):GNode {
-			var node:GNode = new GNode();
+			var node:GNode = new GNode("ninja");
 			var clip:GMovieClip = node.addComponent(GMovieClip) as GMovieClip;
 			clip.setTextureAtlas(Assets.ninjaTextureAtlas);
 			clip.frameRate = 15;
@@ -60,10 +62,13 @@ package examples
 		}
 		
 		private function onClipMouseOver(p_signal:GMouseSignal):void {
-			p_signal.dispatcher.transform.red = p_signal.dispatcher.transform.green = p_signal.dispatcher.transform.blue = 1;
+			trace("clip mouse over");
+			p_signal.dispatcher.transform.setColor(1,1,1,1);
 		}
 		
 		private function onClipMouseOut(p_signal:GMouseSignal):void {
+			trace("clip mouse out");
+			
 			var sprite:GTexturedQuad = p_signal.dispatcher.getComponent(GMovieClip) as GMovieClip;
 			if (sprite.mousePixelEnabled) {
 				p_signal.dispatcher.transform.red = 0;

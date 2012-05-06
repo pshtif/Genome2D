@@ -66,10 +66,12 @@ package examples
 			node.transform.rotation = Math.random()*Math.PI*2;
 			var sprite:GSprite = node.addComponent(GSprite) as GSprite;
 			sprite.setTexture(Assets.whiteTexture);
+			
 			node.mouseEnabled = true;
 			node.onMouseClick.add(onColorClick);
 			node.onMouseOver.add(onColorOver);
 			node.onMouseOut.add(onColorOut);
+			/**/
 			_cContainer.addChild(node);
 		}
 		
@@ -98,11 +100,11 @@ package examples
 		}
 		
 		private function onColorOver(p_signal:GMouseSignal):void {
-			TweenLite.to(p_signal.dispatcher, .25, {scaleX:2, scaleY:2});
+			TweenLite.to(p_signal.dispatcher.transform, .25, {scaleX:2, scaleY:2});
 		}
 		
 		private function onColorOut(p_signal:GMouseSignal):void {
-			TweenLite.to(p_signal.dispatcher, .25, {scaleX:1, scaleY:1});
+			TweenLite.to(p_signal.dispatcher.transform, .25, {scaleX:1, scaleY:1});
 		}
 		
 		private function onUpdate(p_deltaTime:Number):void {

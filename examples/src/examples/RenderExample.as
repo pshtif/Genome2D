@@ -24,8 +24,8 @@ package examples
 		}
 		
 		private function updateInfo():void {
-			_cWrapper.info = "<font color='#00FFFF'><b>BasicExample</b> [ "+__iNodeCount+" G2DSprites ]\n"+
-			"<font color='#FFFFFF'>This is a simple stress test example rendering movieclips, each moveclip plays at its own custom framerate.\n"+
+			_cWrapper.info = "<font color='#00FFFF'><b>BasicExample</b> [ "+__iNodeCount+" GSprites ]\n"+
+			"<font color='#FFFFFF'>This is a simple stress test example rendering GSprites.\n"+
 			"<font color='#FFFF00'>Press ARROW UP to increase the number of sprites and ARROW DOWN to decrease them, Press A to pause movement.";
 		}
 		
@@ -37,7 +37,6 @@ package examples
 			
 			_cGenome.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			_cGenome.onPreUpdate.add(onUpdate);
-			
 			updateInfo();
 		}
 		

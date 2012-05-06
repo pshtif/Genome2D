@@ -36,6 +36,7 @@ package examples
 			_cWrapper.content.addChild(_cCamera);			
 			
 			_cContainer = new GNode("container"+index);
+			_cContainer.cameraGroup = 1;
 			_cWrapper.content.addChild(_cContainer);
 		}
 		

@@ -69,6 +69,7 @@ package examples
 			cameraNode.transform.y = _iHeight/2;
 			camera.normalizedViewWidth = 1/3;
 			camera.normalizedViewX = 1/3;
+			camera.backgroundAlpha = 1;
 			camera.zoom = 2;
 			camera.mask = 1;
 			camera.index = 1;

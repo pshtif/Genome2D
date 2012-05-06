@@ -17,7 +17,7 @@ package examples
 	
 	public class BlittingExample extends Example
 	{
-		private const COUNT:int = 10;
+		private const COUNT:int = 100;
 		
 		private var __iBlitCount:int;
 		private var __bMove:Boolean = true;
@@ -67,7 +67,7 @@ package examples
 			var texture:GTexture = Assets.crateTexture;
 			// Blit all the images we want
 			for (var i:int = 0; i<__iBlitCount; ++i) {
-				_cGenome.blit(Math.random()*_iWidth, Math.random()*_iHeight, texture, GBlendMode.NONE);
+				_cGenome.blit(Math.random()*_iWidth, Math.random()*_iHeight, texture);
 			}
 			
 			// This will render the node graph, we will call this so our UI is rendered
@@ -93,10 +93,10 @@ package examples
 		private function onKeyDown(event:KeyboardEvent):void {
 			switch (event.keyCode) {
 				case 38:
-					__iBlitCount+=10;
+					__iBlitCount+=100;
 					break;
 				case 40:
-					__iBlitCount-=10;
+					__iBlitCount-=100;
 					if (__iBlitCount<0) __iBlitCount = 0;
 					break;
 			}

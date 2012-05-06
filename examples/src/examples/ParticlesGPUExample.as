@@ -61,7 +61,7 @@ package examples
 			particles.mouseChildren = false;
 			
 			var emitter:GEmitterGPU = particles.addComponent(GEmitterGPU) as GEmitterGPU;
-			emitter.blendMode = GBlendMode.ADDITIVE;
+			emitter.blendMode = GBlendMode.ADD;
 			emitter.setTexture(Assets.particleTexture);
 			__cEmitterContainer.addChild(particles);
 			

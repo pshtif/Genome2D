@@ -9,8 +9,6 @@ package examples
 	import com.genome2d.context.GBlendMode;
 	import com.genome2d.core.GNode;
 	
-	import examples.components.CustomParticle;
-	
 	import flash.events.KeyboardEvent;
 	
 	public class ParticlesExample extends Example
@@ -46,12 +44,10 @@ package examples
 			var particle:GNode = new GNode();
 			// Each particle needs to have G2DParticle component
 			particle.addComponent(GParticle);
-			// This is our custom component just for show, it actually only sets custom colors to each particle
-			particle.addComponent(CustomParticle);
 			// Add sprite texture for our particle
 			var sprite:GSprite = particle.addComponent(GSprite) as GSprite;
 			sprite.setTexture(Assets.particleTexture);
-			sprite.blendMode = GBlendMode.ADDITIVE;
+			sprite.blendMode = GBlendMode.ADD;
 			
 			// Create our particle emitter
 			__cParticles = new GNode("particles");
@@ -69,12 +65,23 @@ package examples
 			// Maximum number of particles generated per second
 			emitter.maxEmission = 64;
 			// Maximum size of the particle, what this means is the scale of the prototype
-			emitter.maxScaleX = 1;
+			emitter.maxScaleX = 6;
 			emitter.minScaleX = 1;
 			// Maximum energy of a particle, this means particles will live for 2 seconds
 			emitter.maxEnergy = 2;
 			// Angle of emission, this will set a 360 degree emission
 			emitter.angle = Math.PI*2;
+			
+			emitter.initialParticleRed = 1;
+			emitter.initialParticleGreen = 1;
+			emitter.initialParticleBlue = 0;
+			emitter.initialParticleAlpha = 1;
+			
+			emitter.endParticleRed = 1;
+			emitter.endParticleGreen = 0;
+			emitter.endParticleBlue = 0;
+			emitter.endParticleAlpha = 0;
+			
 			_cContainer.addChild(__cParticles);
 		
 			/**
