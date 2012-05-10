@@ -30,7 +30,7 @@ package assets
 		
 		[Embed(source = "../assets/crate.jpg")]
 		static private const CrateGFX:Class;
-		
+		/*
 		[Embed(source = "../assets/silhouette2.png")]
 		static private const Silhouette1GFX:Class;
 		
@@ -39,7 +39,7 @@ package assets
 		
 		[Embed(source = "../assets/silhouette4.png")]
 		static private const Silhouette3GFX:Class;
-		
+		/**/
 		[Embed(source = "../assets/particle32.png")]
 		static private const ParticleGFX:Class;
 		
@@ -51,18 +51,19 @@ package assets
 		static public var crateTexture:GTexture;
 		static public var whiteTexture:GTexture;
 		static public var particleTexture:GTexture;
-		
+		/*
 		static public var silhouette1BitmapData:BitmapData;
 		static public var silhouette2BitmapData:BitmapData;
 		static public var silhouette3BitmapData:BitmapData;
-		
+		/**/
 		static public var customTexture:GTexture;
 		
 		static public function init():void {
+			/*
 			silhouette1BitmapData = (new Silhouette1GFX()).bitmapData;
 			silhouette2BitmapData = (new Silhouette2GFX()).bitmapData;
 			silhouette3BitmapData = (new Silhouette3GFX()).bitmapData;
-			
+			/**/
 			mineTextureAtlas = GTextureAtlasFactory.createFromBitmapDataAndXML("mine", (new MinesGFX()).bitmapData, XML(new MinesXML()));
 			ninjaTextureAtlas = GTextureAtlasFactory.createFromBitmapDataAndXML("ninja", (new NinjaGFX()).bitmapData, XML(new NinjaXML()));
 
