@@ -11,12 +11,14 @@ package
 	import flash.geom.Rectangle;
 	
 	[SWF(width="800", height="600", backgroundColor="#000000", frameRate="60")]
-	public class GShapeExample extends Sprite
+	public class ShapeExample extends Sprite
 	{
 		[Embed(source = "../assets/crate.jpg")]
 		static private const CrateGFX:Class;
 		
-		public function GShapeExample() {
+		
+		
+		public function ShapeExample() {
 			// Hook up a callback once initialization is done
 			Genome2D.getInstance().onInitialized.addOnce(onGenome2DInitialized);
 			
