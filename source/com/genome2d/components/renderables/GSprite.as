@@ -23,7 +23,7 @@ package com.genome2d.components.renderables
 		}
 		public function set textureId(p_value:String):void {
 			cTexture = GTextureBase.getTextureBaseById(p_value) as GTexture;
-			//if (cTexture == null) throw new GError(GError.TEXTURE_ID_DOESNT_EXIST, p_value);
+			//if (cTexture == null) throw new GError(GError.TEXTURE_ID_DOESNT_EXIST, p_value);		
 		}
 		
 		/**
