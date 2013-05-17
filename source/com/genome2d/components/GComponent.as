@@ -60,7 +60,7 @@ package com.genome2d.components
 			/* Creation of simple arrays and objects not implemented yet */
 			else {
 				node = <{p_name} type={p_type}/>;
-				for (var it in  p_value) {
+				for (var it:* in  p_value) {
 					addPrototypeProperty(it, p_value[it], typeof(p_value[it]), node);
 				}
 			}
