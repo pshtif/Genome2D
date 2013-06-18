@@ -7,15 +7,16 @@
 */
 package com.genome2d.components
 {
-	import avmplus.getQualifiedClassName;
-	
+	import com.genome2d.g2d;
 	import com.genome2d.context.GContext;
 	import com.genome2d.core.GNode;
-	import com.genome2d.g2d;
 	
 	import flash.events.MouseEvent;
+	import flash.events.TouchEvent;
 	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
+	
+	import avmplus.getQualifiedClassName;
 	
 	use namespace g2d;
 	
@@ -203,7 +204,7 @@ package com.genome2d.components
 			
 			p_position.x = tx + cNode.cTransform.nWorldX;
 			p_position.y = ty + cNode.cTransform.nWorldY;
-	
+
 			return cNode.cCore.root.processMouseEvent(p_captured, p_event, p_position, this);
 		}
 		

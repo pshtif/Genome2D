@@ -7,7 +7,8 @@
 */
 package com.genome2d.components
 {
-	import com.genome2d.core.GNode;
+import com.genome2d.components.particles.GSimpleEmitter;
+import com.genome2d.core.GNode;
 	import com.genome2d.g2d;
 	
 	import flash.geom.Matrix3D;
@@ -23,10 +24,11 @@ package com.genome2d.components
 		private var __bWorldTransformMatrixDirty:Boolean = true;
 		private var __mWorldTransformMatrix:Matrix3D = new Matrix3D();
 		public function get worldTransformMatrix():Matrix3D {
-			if (bTransformDirty) invalidate(true, false);
 			if (__bWorldTransformMatrixDirty) {
+                var sx:Number = (nWorldScaleX == 0) ? 0.000001 : nWorldScaleX;
+                var sy:Number = (nWorldScaleY == 0) ? 0.000001 : nWorldScaleY;
 				__mWorldTransformMatrix.identity();
-				__mWorldTransformMatrix.prependScale(nWorldScaleX, nWorldScaleY, 1);
+				__mWorldTransformMatrix.prependScale(sx, sy, 1);
 				__mWorldTransformMatrix.prependRotation(nWorldRotation*180/Math.PI, Vector3D.Z_AXIS);
 				__mWorldTransformMatrix.appendTranslation(nWorldX, nWorldY, 0);
 				__bWorldTransformMatrixDirty = false;
@@ -240,9 +242,12 @@ package com.genome2d.components
 		/**
 		 * 	@private
 		 */
-		g2d function invalidate(p_invalidateTransform:Boolean, p_invalidateColor:Boolean):void {			
-			if (cNode.cParent == null) return;
-			
+		g2d function invalidate(p_invalidateTransform:Boolean, p_invalidateColor:Boolean):void {	
+			if (cNode.cParent == null) {
+				bColorDirty = bTransformDirty = false;
+				return;
+			}
+
 			var parentTransform:GTransform = cNode.cParent.cTransform;
 			if (cNode.cBody != null && cNode.cBody.isDynamic()) {
 				nLocalX = nWorldX = cNode.cBody.x;
@@ -256,9 +261,10 @@ package com.genome2d.components
 						if (parentTransform.nWorldRotation != 0) {
 							var cos:Number = Math.cos(parentTransform.nWorldRotation);
 							var sin:Number = Math.sin(parentTransform.nWorldRotation);
-							
-							nWorldX = (nLocalX*cos - nLocalY*sin)*parentTransform.nWorldScaleX + parentTransform.nWorldX;
-							nWorldY = (nLocalY*cos + nLocalX*sin)*parentTransform.nWorldScaleY + parentTransform.nWorldY;
+							//nWorldX = (nLocalX*cos - nLocalY*sin)*parentTransform.nWorldScaleX + parentTransform.nWorldX;
+                            nWorldX = nLocalX*parentTransform.nWorldScaleX*cos - nLocalY*parentTransform.nWorldScaleY*sin + parentTransform.nWorldX;
+							//nWorldY = (nLocalY*cos + nLocalX*sin)*parentTransform.nWorldScaleY + parentTransform.nWorldY;
+                            nWorldY = nLocalY*parentTransform.nWorldScaleY*cos + nLocalX*parentTransform.nWorldScaleX*sin + parentTransform.nWorldY;
 						} else {
 							nWorldX = nLocalX*parentTransform.nWorldScaleX + parentTransform.nWorldX;
 							nWorldY = nLocalY*parentTransform.nWorldScaleY + parentTransform.nWorldY;
@@ -272,13 +278,19 @@ package com.genome2d.components
 							rAbsoluteMaskRect.y = rMaskRect.y + nWorldY;
 						}
 						
+						if (cNode.cBody != null && cNode.cBody.isKinematic()) {
+							cNode.cBody.x = nWorldX;
+							cNode.cBody.y = nWorldY;
+							cNode.cBody.rotation = nWorldRotation;
+						}
+						
 						bTransformDirty = false;
 						__bWorldTransformMatrixDirty = true;
 					}
 				} 
 			}
-			
-			if (p_invalidateColor && !useWorldColor) {
+
+            if (p_invalidateColor && !useWorldColor) {
 				nWorldRed = _red * parentTransform.nWorldRed;
 				nWorldGreen = _green * parentTransform.nWorldGreen;
 				nWorldBlue = _blue * parentTransform.nWorldBlue;

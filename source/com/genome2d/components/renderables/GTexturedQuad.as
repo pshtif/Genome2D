@@ -41,7 +41,7 @@ package com.genome2d.components.renderables
 			return cTexture;
 		}
 		
-		private var __aTransformedVertices:Vector.<Number> = new Vector.<Number>();
+		protected var _aTransformedVertices:Vector.<Number> = new Vector.<Number>();
 		
 		/**
 		 * 	If this flag is true any node using this component will use pixel perfect mouse detection based on a data from this texture
@@ -62,6 +62,7 @@ package com.genome2d.components.renderables
 			if (cTexture == null) return;
 		
 			var transform:GTransform = cNode.cTransform;
+            //trace(node, "tx:", transform.nWorldX, "ty:", transform.nWorldY, "tsx:", transform.nWorldScaleX, "tsy:", transform.nWorldScaleY, "tr:", transform.nWorldRotation);
 			p_context.draw(cTexture, transform.nWorldX, transform.nWorldY, transform.nWorldScaleX, transform.nWorldScaleY, transform.nWorldRotation, transform.nWorldRed, transform.nWorldGreen, transform.nWorldBlue, transform.nWorldAlpha, iBlendMode, p_maskRect, filter);
 		}
 		
@@ -89,12 +90,14 @@ package com.genome2d.components.renderables
 			var region:Rectangle = cTexture.region;
 
 			var transformMatrix:Matrix3D = cNode.cTransform.worldTransformMatrix;
+			transformMatrix.prependTranslation(-cTexture.nPivotX, -cTexture.nPivotY, 0);
 			transformMatrix.prependScale(region.width, region.height, 1);
 
-			transformMatrix.transformVectors(NORMALIZED_VERTICES_3D, __aTransformedVertices);
+			transformMatrix.transformVectors(NORMALIZED_VERTICES_3D, _aTransformedVertices);
 			
 			transformMatrix.prependScale(1/region.width, 1/region.height, 1);
-			return __aTransformedVertices;
+			transformMatrix.prependTranslation(cTexture.nPivotX, cTexture.nPivotY, 0);
+			return _aTransformedVertices;
 		}
 		
 		/**
@@ -149,10 +152,10 @@ package com.genome2d.components.renderables
 		/**
 		 * 	Hit test point if its within this quad
 		 */
-		public function hitTestPoint(p_point:Vector3D, p_pixelEnabled:Boolean = false):Boolean {		
+		public function hitTestPoint(p_point:Vector3D, p_pixelEnabled:Boolean = false):Boolean {	
 			var tWidth:Number = cTexture.width;// * cTexture.resampleScale;
 			var tHeight:Number = cTexture.height;// * cTexture.resampleScale;
-			
+		
 			var transformMatrix:Matrix3D = cNode.cTransform.getTransformedWorldTransformMatrix(tWidth, tHeight, 0, true);
 			
 			var localPoint:Vector3D = transformMatrix.transformVector(p_point);
@@ -178,7 +181,7 @@ package com.genome2d.components.renderables
 				if (cNode.cMouseOver == cNode) cNode.handleMouseEvent(cNode, MouseEvent.MOUSE_OUT, Number.NaN, Number.NaN, p_event.buttonDown, p_event.ctrlKey);
 				return false;
 			}
-			
+	
 			var tWidth:Number = cTexture.width;// * cTexture.resampleScale;
 			var tHeight:Number = cTexture.height;// * cTexture.resampleScale;
 

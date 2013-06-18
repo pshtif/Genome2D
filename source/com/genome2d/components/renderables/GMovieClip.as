@@ -18,37 +18,37 @@ package com.genome2d.components.renderables
 	
 	public class GMovieClip extends GTexturedQuad
 	{
-		private var _nSpeed:Number = 1000/30;
-		private var _nAccumulatedTime:Number = 0;
+		protected var _nSpeed:Number = 1000/30;
+		protected var _nAccumulatedTime:Number = 0;
 		
-		private var _iCurrentFrame:int = -1;
+		protected var _iCurrentFrame:int = -1;
 		public function get currentFrame():int {
 			return _iCurrentFrame;
 		}
 		
-		private var _iStartIndex:int = -1;
-		private var _iEndIndex:int = -1; 
-		private var _bPlaying:Boolean = true;
+		protected var _iStartIndex:int = -1;
+		protected var _iEndIndex:int = -1; 
+		protected var _bPlaying:Boolean = true;
 		
-		private var __cTextureAtlas:GTextureAtlas;
+		protected var _cTextureAtlas:GTextureAtlas;
 		public function get textureAtlasId():String {
-			return (__cTextureAtlas) ? __cTextureAtlas.id : "";
+			return (_cTextureAtlas) ? _cTextureAtlas.id : "";
 		}
 		public function set textureAtlasId(p_value:String):void {
-			__cTextureAtlas = (p_value != "") ? GTextureAtlas.getTextureAtlasById(p_value) : null;
-			if (__aFrameIds) cTexture = __cTextureAtlas.getTexture(__aFrameIds[0]);
+			_cTextureAtlas = (p_value != "") ? GTextureAtlas.getTextureAtlasById(p_value) : null;
+			if (_aFrameIds) cTexture = _cTextureAtlas.getTexture(_aFrameIds[0]);
 		}
 		
-		private var __aFrameIds:Array;
-		private var __iFrameIdsLength:int = 0;
+		protected var _aFrameIds:Array;
+		protected var _iFrameIdsLength:int = 0;
 		public function get frames():Array {
-			return __aFrameIds;
+			return _aFrameIds;
 		}
 		public function set frames(p_value:Array):void {
-			__aFrameIds = p_value;
-			__iFrameIdsLength = __aFrameIds.length;
+			_aFrameIds = p_value;
+			_iFrameIdsLength = _aFrameIds.length;
 			_iCurrentFrame = 0;
-			if (__cTextureAtlas) cTexture = __cTextureAtlas.getTexture(__aFrameIds[0]);
+			if (_cTextureAtlas) cTexture = _cTextureAtlas.getTexture(_aFrameIds[0]);
 		}
 		
 		public var repeatable:Boolean = true;
@@ -66,8 +66,8 @@ package com.genome2d.components.renderables
 		 * 	Set texture atlas that should be used by this movie clip
 		 */
 		public function setTextureAtlas(p_textureAtlas:GTextureAtlas):void {
-			__cTextureAtlas = p_textureAtlas;
-			if (__aFrameIds) cTexture = __cTextureAtlas.getTexture(__aFrameIds[0]);
+			_cTextureAtlas = p_textureAtlas;
+			if (_aFrameIds) cTexture = _cTextureAtlas.getTexture(_aFrameIds[0]);
 		}
 		
 		public function get frameRate():int {
@@ -81,22 +81,27 @@ package com.genome2d.components.renderables
 		}
 		
 		public function get numFrames():int {
-			return __iFrameIdsLength;
+			return _iFrameIdsLength;
 		}
 		
 		/**
 		 * 	Go to a specified frame of this movie clip
 		 */
 		public function gotoFrame(p_frame:int):void {
-			if (__aFrameIds == null) return;
+			if (_aFrameIds == null) return;
 			_iCurrentFrame = p_frame;
-			_iCurrentFrame %= __aFrameIds.length;
-			cTexture = __cTextureAtlas.getTexture(__aFrameIds[_iCurrentFrame]);
+			_iCurrentFrame %= _aFrameIds.length;
+			cTexture = _cTextureAtlas.getTexture(_aFrameIds[_iCurrentFrame]);
 		}
 		
 		public function gotoAndPlay(p_frame:int):void {
 			gotoFrame(p_frame);
 			play();
+		}
+		
+		public function gotoAndStop(p_frame:int):void {
+			gotoFrame(p_frame);
+			stop();
 		}
 		
 		/**
@@ -124,13 +129,13 @@ package com.genome2d.components.renderables
 				 
 				if (_nAccumulatedTime >= _nSpeed) {
 					_iCurrentFrame += _nAccumulatedTime/_nSpeed; 
-					if (_iCurrentFrame<__iFrameIdsLength || repeatable) {
-						_iCurrentFrame %= __aFrameIds.length;
+					if (_iCurrentFrame<_iFrameIdsLength || repeatable) {
+						_iCurrentFrame %= _aFrameIds.length;
 					} else {
-						_iCurrentFrame = __iFrameIdsLength-1;
+						_iCurrentFrame = _iFrameIdsLength-1;
 					}				
 
-					cTexture = __cTextureAtlas.getTexture(__aFrameIds[_iCurrentFrame]);
+					cTexture = _cTextureAtlas.getTexture(_aFrameIds[_iCurrentFrame]);
 				}
 				_nAccumulatedTime %= _nSpeed;
 			}

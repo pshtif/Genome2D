@@ -1,3 +1,10 @@
+/*
+* 	Genome2D - GPU 2D framework utilizing Molehill API
+*
+*	Copyright 2011 Peter Stefcek. All rights reserved.
+*
+*	License:: ./doc/LICENSE.md (https://github.com/pshtif/Genome2D/blob/master/LICENSE.md)
+*/
 package com.genome2d.components.renderables
 {
 	import com.genome2d.g2d;
@@ -24,7 +31,7 @@ package com.genome2d.components.renderables
 		protected var _aVertices:Vector.<Number>;
 		protected var _aUVs:Vector.<Number>;
 		
-		protected var __bDirty:Boolean = false;
+		protected var _bDirty:Boolean = false;
 		
 		public function setTexture(p_texture:GTexture):void {
 			cTexture = p_texture;
@@ -63,13 +70,13 @@ package com.genome2d.components.renderables
 			cTransformVector[15] = transform.nWorldAlpha;
 			//trace(cTransformVector);
 			/**/
-			_cMaterial.draw(cTransformVector, cTexture.cContextTexture.tTexture, cTexture.iFilteringType, _aVertices, _aUVs, _iCurrentVertices, __bDirty);
+			_cMaterial.draw(cTransformVector, cTexture.cContextTexture.tTexture, cTexture.iFilteringType, _aVertices, _aUVs, _iCurrentVertices, _bDirty);
 			
-			__bDirty = false;
+			_bDirty = false;
 		}
 		
 		public function init(p_vertices:Vector.<Number>, p_uvs:Vector.<Number>):void {
-			__bDirty = true;
+			_bDirty = true;
 			_iCurrentVertices = p_vertices.length/2;
 			
 			if (p_vertices.length/2 > _iMaxVertices) {

@@ -22,27 +22,38 @@ package com.genome2d.components.renderables
 	
 	public class GTextureText extends GRenderable
 	{
-		private var __cTextureAtlas:GTextureAtlas;
+		protected var _cTextureAtlas:GTextureAtlas;
 		
-		private var __bInvalidate:Boolean = false;
+		protected var _bInvalidate:Boolean = false;
 		
-		private var __nTracking:Number = 0;
+		protected var _nTracking:Number = 0;
 		public function get tracking():Number {
-			return __nTracking;
+			return _nTracking;
 		}
 		public function set tracking(p_tracking:Number):void {
-			__nTracking = p_tracking;
-			__bInvalidate = true;
+			_nTracking = p_tracking;
+			_bInvalidate = true;
 		}
 		
-		private var __iAlign:int = GTextureTextAlignType.TOP_LEFT;
+		protected var _nLineSpace:Number = 0;
+		public function get lineSpace():Number {
+			return _nLineSpace;
+		}
+		public function set lineSpace(p_value:Number):void {
+			_nLineSpace = p_value;
+			_bInvalidate = true;
+		}
+		
+		protected var _iAlign:int = GTextureTextAlignType.TOP_LEFT;
 		public function get align():int {
-			return __iAlign;
+			return _iAlign;
 		}
 		public function set align(p_align:int):void {
-			__iAlign = p_align;
-			__bInvalidate = true;
+			_iAlign = p_align;
+			_bInvalidate = true;
 		}
+		
+		public var maxWidth:Number = 0;
 		
 		/**
 		 * 	@private
@@ -52,7 +63,7 @@ package com.genome2d.components.renderables
 		}
 		
 		public function get textureAtlasId():String {
-			if (__cTextureAtlas) return __cTextureAtlas.id;
+			if (_cTextureAtlas) return _cTextureAtlas.id;
 			return "";
 		}
 		
@@ -61,51 +72,58 @@ package com.genome2d.components.renderables
 		}
 		
 		public function setTextureAtlas(p_textureAtlas:GTextureAtlas):void {
-			__cTextureAtlas = p_textureAtlas;
-			__bInvalidate = true;
+			_cTextureAtlas = p_textureAtlas;
+			_bInvalidate = true;
 		}
 		
-		private var __sText:String = "";
+		protected var _sText:String = "";
 		public function get text():String {
-			return __sText;
+			return _sText;
 		}
 		public function set text(p_text:String):void {
-			__sText = p_text;
-			__bInvalidate = true;
+			_sText = p_text;
+			_bInvalidate = true;
 		}
 		
-		private var __nWidth:Number = 0;
+		protected var _nWidth:Number = 0;
 		public function get width():Number {
-			if (__bInvalidate) invalidateText();
+			if (_bInvalidate) invalidateText();
 			
-			return __nWidth*cNode.cTransform.nWorldScaleX;
+			return _nWidth*cNode.cTransform.nWorldScaleX;
 		}
 		
-		private var __nHeight:Number = 0;
+		protected var _nHeight:Number = 0;
 		public function get height():Number {		
-			if (__bInvalidate) invalidateText();
+			if (_bInvalidate) invalidateText();
 			
-			return __nHeight*cNode.cTransform.nWorldScaleY;
+			return _nHeight*cNode.cTransform.nWorldScaleY;
 		}
 			
 		override public function update(p_deltaTime:Number, p_parentTransformUpdate:Boolean, p_parentColorUpdate:Boolean):void {
-			if (!__bInvalidate) return;
+			if (!_bInvalidate) return;
 		
 			invalidateText();
 		}
 			
-		private function invalidateText():void {
-			if (__cTextureAtlas == null) return;
+		protected function invalidateText():void {
+			if (_cTextureAtlas == null) return;
 			
-			var offset:int = 0;
+			_nWidth = 0;
+			var offsetX:Number = 0;
+			var offsetY:Number =  0;
 			var charNode:GNode = cNode.firstChild;
 			var charSprite:GSprite;
 			var texture:GTexture;
 			
-			for (var i:int = 0; i<__sText.length; ++i) {
-				texture = __cTextureAtlas.getTexture(String(__sText.charCodeAt(i)));
-				if (texture == null) throw new GError(GError.NO_TEXTURE_FOR_CHARACTER_FOUND+__sText.charCodeAt(i)+" "+__sText.charAt(i));
-				__nHeight = texture.height;
+			for (var i:int = 0; i<_sText.length; ++i) {
+				if (_sText.charCodeAt(i) == 10) {
+					_nWidth = (offsetX>_nWidth) ? offsetX : _nWidth;
+					offsetX = 0;
+					offsetY+=texture.height+_nLineSpace;
+					continue;
+				}
+				texture = _cTextureAtlas.getTexture(String(_sText.charCodeAt(i)));
+				if (texture == null) throw new GError("Texture for character "+_sText.charAt(i)+" with code "+_sText.charCodeAt(i)+" not found!");
 				if (charNode == null) {
 					charSprite = GNodeFactory.createNodeWithComponent(GSprite) as GSprite;
 					charNode = charSprite.cNode;
@@ -115,15 +133,20 @@ package com.genome2d.components.renderables
 				}
 				charSprite.node.cameraGroup = node.cameraGroup;
 				charSprite.setTexture(texture);
-				offset += texture.width/2;
-				charSprite.cNode.cTransform.x = offset;
-				charSprite.cNode.cTransform.y = texture.height/2;
-				offset += texture.width/2 + __nTracking;
+				if (maxWidth>0 && offsetX + texture.width>maxWidth) {
+					_nWidth = (offsetX>_nWidth) ? offsetX : _nWidth;
+					offsetX = 0;
+					offsetY+=texture.height+_nLineSpace;
+				}
+				offsetX += texture.width/2;
+				charSprite.cNode.cTransform.x = offsetX;
+				charSprite.cNode.cTransform.y = offsetY+texture.height/2;
+				offsetX += texture.width/2 + _nTracking;
 				charNode = charNode.next;
 			}
 			
-			__nWidth = offset;
-			
+			_nWidth = (offsetX>_nWidth) ? offsetX : _nWidth;
+			_nHeight = offsetY + (texture!=null ? texture.height : 0);
 			while (charNode) {
 				var next:GNode = charNode.next;
 				cNode.removeChild(charNode);
@@ -132,25 +155,36 @@ package com.genome2d.components.renderables
 			
 			invalidateAlign();
 			
-			__bInvalidate = false;
+			_bInvalidate = false;
 		}
 		
 		private function invalidateAlign():void {
 			var node:GNode;
-			switch (__iAlign) {
-				case GTextureTextAlignType.MIDDLE:
+			switch (_iAlign) {
+				case GTextureTextAlignType.MIDDLE_CENTER:
 					for (node = cNode.firstChild; node; node = node.next) {
-						node.transform.x -= __nWidth/2;
-						node.transform.y -= __nHeight/2;
+						node.transform.x -= _nWidth/2;
+						node.transform.y -= _nHeight/2;
 					}
 					break;
 				case GTextureTextAlignType.TOP_RIGHT:
 					for (node = cNode.firstChild; node; node = node.next) {
-						node.transform.x -= __nWidth;
+						node.transform.x -= _nWidth;
 					}
 					break;
 				case GTextureTextAlignType.TOP_LEFT:	
 					break;
+				case GTextureTextAlignType.MIDDLE_RIGHT:
+					for (node = cNode.firstChild; node; node = node.next) {
+						node.transform.x -= _nWidth
+						node.transform.y -= _nHeight/2;
+					}
+					break;
+                case GTextureTextAlignType.MIDDLE_LEFT:
+                    for (node = cNode.firstChild; node; node = node.next) {
+                        node.transform.y -= _nHeight/2;
+                    }
+                    break;
 			}
 		}
 		
@@ -158,36 +192,37 @@ package com.genome2d.components.renderables
 		 * 	@private
 		 */
 		override public function processMouseEvent(p_captured:Boolean, p_event:MouseEvent, p_position:Vector3D):Boolean {
+			if (_nWidth == 0 || _nHeight == 0) return false;
 			if (p_captured) {
 				if (cNode.cMouseOver == cNode) cNode.handleMouseEvent(cNode, MouseEvent.MOUSE_OUT, Number.NaN, Number.NaN, p_event.buttonDown, p_event.ctrlKey);
 				return false;
 			}
 			
-			var transformMatrix:Matrix3D = cNode.cTransform.getTransformedWorldTransformMatrix(__nWidth, __nHeight, 0, true);
+			var transformMatrix:Matrix3D = cNode.cTransform.getTransformedWorldTransformMatrix(_nWidth, _nHeight, 0, true);
 			
 			var localMousePosition:Vector3D = transformMatrix.transformVector(p_position);
 			
-			transformMatrix.prependScale(1/__nWidth, 1/__nHeight, 1);
+			transformMatrix.prependScale(1/_nWidth, 1/_nHeight, 1);
 			
 			var tx:Number = 0;
 			var ty:Number = 0;
-			switch (__iAlign) {
-				case GTextureTextAlignType.MIDDLE:
+			switch (_iAlign) {
+				case GTextureTextAlignType.MIDDLE_CENTER:
 					tx = -.5;
 					ty = -.5;
 					break;
 			}
 			
 			if (localMousePosition.x >= tx && localMousePosition.x <= 1+tx && localMousePosition.y >= ty && localMousePosition.y <= 1+ty) {
-				cNode.handleMouseEvent(cNode, p_event.type, localMousePosition.x*__nWidth, localMousePosition.y*__nHeight, p_event.buttonDown, p_event.ctrlKey);
+				cNode.handleMouseEvent(cNode, p_event.type, localMousePosition.x*_nWidth, localMousePosition.y*_nHeight, p_event.buttonDown, p_event.ctrlKey);
 				if (cNode.cMouseOver != cNode) {
-					cNode.handleMouseEvent(cNode, MouseEvent.MOUSE_OVER, localMousePosition.x*__nWidth, localMousePosition.y*__nHeight, p_event.buttonDown, p_event.ctrlKey);
+					cNode.handleMouseEvent(cNode, MouseEvent.MOUSE_OVER, localMousePosition.x*_nWidth, localMousePosition.y*_nHeight, p_event.buttonDown, p_event.ctrlKey);
 				}
 				
 				return true;
 			} else {
 				if (cNode.cMouseOver == cNode) {
-					cNode.handleMouseEvent(cNode, MouseEvent.MOUSE_OUT, localMousePosition.x*__nWidth, localMousePosition.y*__nHeight, p_event.buttonDown, p_event.ctrlKey);
+					cNode.handleMouseEvent(cNode, MouseEvent.MOUSE_OUT, localMousePosition.x*_nWidth, localMousePosition.y*_nHeight, p_event.buttonDown, p_event.ctrlKey);
 				}
 			}
 			

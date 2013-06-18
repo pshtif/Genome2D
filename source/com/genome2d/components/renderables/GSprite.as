@@ -7,9 +7,8 @@
 */
 package com.genome2d.components.renderables
 {
-	import com.genome2d.core.GNode;
-	import com.genome2d.error.GError;
 	import com.genome2d.g2d;
+	import com.genome2d.core.GNode;
 	import com.genome2d.textures.GTexture;
 	import com.genome2d.textures.GTextureBase;
 	
@@ -23,7 +22,7 @@ package com.genome2d.components.renderables
 		}
 		public function set textureId(p_value:String):void {
 			cTexture = GTextureBase.getTextureBaseById(p_value) as GTexture;
-			//if (cTexture == null) throw new GError(GError.TEXTURE_ID_DOESNT_EXIST, p_value);		
+			//if (cTexture == null) throw new GError(GError.TEXTURE_ID_DOESNT_EXIST, p_value);
 		}
 		
 		/**

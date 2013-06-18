@@ -7,14 +7,13 @@
 */
 package com.genome2d.components.renderables.flash
 {
+	import com.genome2d.g2d;
 	import com.genome2d.components.GCamera;
 	import com.genome2d.components.renderables.GTexturedQuad;
 	import com.genome2d.context.GBlendMode;
 	import com.genome2d.context.GContext;
 	import com.genome2d.core.GNode;
 	import com.genome2d.error.GError;
-	import com.genome2d.g2d;
-	import com.genome2d.textures.GTexture;
 	import com.genome2d.textures.GTextureAlignType;
 	import com.genome2d.textures.GTextureFilteringType;
 	import com.genome2d.textures.GTextureResampleType;
@@ -22,10 +21,8 @@ package com.genome2d.components.renderables.flash
 	
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
-	import flash.events.MouseEvent;
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
-	import flash.geom.Vector3D;
 	
 	use namespace g2d;
 	
@@ -120,7 +117,7 @@ package com.genome2d.components.renderables.flash
 			super(p_node);
 			
 			iBlendMode = GBlendMode.NONE;
-			__sTextureId = "G2DNativeObject#"+__iCount++;
+			__sTextureId = "G2DFlashObject#"+__iCount++;
 			__mNativeMatrix = new Matrix();
 		}
 		

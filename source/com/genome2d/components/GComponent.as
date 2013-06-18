@@ -7,11 +7,12 @@
 */
 package com.genome2d.components
 {
+	import com.genome2d.g2d;
 	import com.genome2d.context.GContext;
 	import com.genome2d.core.GNode;
-	import com.genome2d.g2d;
 	
 	import flash.events.MouseEvent;
+	import flash.events.TouchEvent;
 	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
 	import flash.utils.describeType;
@@ -60,7 +61,7 @@ package com.genome2d.components
 			/* Creation of simple arrays and objects not implemented yet */
 			else {
 				node = <{p_name} type={p_type}/>;
-				for (var it:* in  p_value) {
+				for (var it:String in  p_value) {
 					addPrototypeProperty(it, p_value[it], typeof(p_value[it]), node);
 				}
 			}
@@ -183,15 +184,28 @@ package com.genome2d.components
 		}
 		
 		/**
-		 * 	Base dispose method, if there is a disposing you need to do in your extending component you should override it and always call super.dispose() its used when a node using this component is being disposed
+		 * 	Abstract method that should be overriden and implemented if you are creating your own components, its called each time a node that uses this component is processing touch events
 		 */
-		public function dispose():void {
+		public function processTouchEvent(p_captured:Boolean, p_event:TouchEvent, p_position:Vector3D):Boolean {
+			return false;	
+		}
+		
+		private function internaldispose():void {
 			_bActive = false;
 			
 			cNode = null;
 			
 			cNext = null;
 			cPrevious = null;
+			
+			dispose();
+		}
+		
+		/**
+		 * 	Base dispose method, if there is a disposing you need to do in your extending component you should override it and always call super.dispose() its used when a node using this component is being disposed
+		 */
+		public function dispose():void {
+			
 		}
 	}
 }
