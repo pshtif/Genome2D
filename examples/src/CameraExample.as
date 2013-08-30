@@ -42,7 +42,7 @@ package
 		// Initialization callback
 		protected function onGenome2DInitialized():void {
 			// Create a crate texture from embedded asset
-			GTextureFactory.createFromAsset("crate", CrateGFX, false);
+			GTextureFactory.createFromAsset("crate", CrateGFX);
 			
 			// Create a custom camera
 			_cCamera = GNodeFactory.createNodeWithComponent(GCamera) as GCamera;
