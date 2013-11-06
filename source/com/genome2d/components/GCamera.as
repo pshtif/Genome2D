@@ -142,12 +142,6 @@ package com.genome2d.components
 			cNode.onAddedToStage.add(onAddedToStage);
 			cNode.onRemovedFromStage.add(onRemovedFromStage);
 		}
-
-		/**
-		 * 	@private
-		 */
-		override public function update(p_deltaTime:Number, p_parentTransformUpdate:Boolean, p_parentColorUpdate:Boolean):void {
-		}
 		
 		g2d function invalidate():void {
 			rViewRectangle.x = normalizedViewX*cNode.cCore.cConfig.viewRect.width;
@@ -176,9 +170,9 @@ package com.genome2d.components
 			iRenderedNodesCount = 0;
 
 			if (backgroundAlpha != 0) p_context.blitColor(rViewRectangle.x + rViewRectangle.width/2, rViewRectangle.y + rViewRectangle.height/2, rViewRectangle.width, rViewRectangle.height, backgroundRed, backgroundGreen, backgroundBlue, backgroundAlpha, 1, rViewRectangle);
-			
+
 			p_context.setCamera(this);
-			cNode.cCore.root.render(p_context, this, rViewRectangle, false);
+			cNode.cCore.root.render(p_context, false, false, this, rViewRectangle, false);
 		}
 		
 		/**

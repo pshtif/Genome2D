@@ -18,7 +18,9 @@ package com.genome2d.textures
 	import flash.utils.ByteArray;
 	import flash.utils.Dictionary;
 
-	use namespace g2d;
+import org.osflash.signals.Signal;
+
+use namespace g2d;
 	
 	public class GTextureBase
 	{
@@ -64,8 +66,11 @@ package com.genome2d.textures
 			}
 			return count;
 		}
-		
-		static g2d function invalidate():void {
+
+        static public var onInvalidationAll:Signal = new Signal();
+
+		static g2d function invalidateAll():void {
+            onInvalidationAll.dispatch();
 			for (var it:String in __dReferences) {
 				(__dReferences[it] as GTextureBase).invalidateContextTexture(true);
 			}

@@ -14,7 +14,9 @@ package com.genome2d.components.renderables
 	import com.genome2d.textures.GTextureAtlas;
 	import com.genome2d.textures.GTextureBase;
 
-	use namespace g2d;
+import org.osflash.signals.Signal;
+
+use namespace g2d;
 	
 	public class GMovieClip extends GTexturedQuad
 	{
@@ -29,6 +31,12 @@ package com.genome2d.components.renderables
 		protected var _iStartIndex:int = -1;
 		protected var _iEndIndex:int = -1; 
 		protected var _bPlaying:Boolean = true;
+
+        protected var _cOnComplete:Signal;
+        public function get onComplete():Signal {
+            if (_cOnComplete == null) _cOnComplete = new Signal();
+            return _cOnComplete;
+        }
 		
 		protected var _cTextureAtlas:GTextureAtlas;
 		public function get textureAtlasId():String {
@@ -121,7 +129,7 @@ package com.genome2d.components.renderables
 		/**
 		 * 	@private
 		 */
-		override public function update(p_deltaTime:Number, p_parentTransformUpdate:Boolean, p_parentColorUpdate:Boolean):void {
+		override public function update(p_deltaTime:Number):void {
 			if (cTexture == null) return;
 			
 			if (_bPlaying) {
@@ -132,7 +140,9 @@ package com.genome2d.components.renderables
 					if (_iCurrentFrame<_iFrameIdsLength || repeatable) {
 						_iCurrentFrame %= _aFrameIds.length;
 					} else {
+                        if (_cOnComplete != null) _cOnComplete.dispatch(this);
 						_iCurrentFrame = _iFrameIdsLength-1;
+                        _bPlaying = false;
 					}				
 
 					cTexture = _cTextureAtlas.getTexture(_aFrameIds[_iCurrentFrame]);

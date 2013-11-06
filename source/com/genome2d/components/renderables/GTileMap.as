@@ -15,6 +15,9 @@ package com.genome2d.components.renderables
 		protected var _iWidth:int;
 		protected var _iHeight:int;
 		protected var _aTiles:Vector.<GTile>;
+        public function get tiles():Vector.<GTile> {
+            return _aTiles;
+        }
 		
 		protected var _iTileWidth:int = 0;
 		protected var _iTileHeight:int = 0;
@@ -35,7 +38,7 @@ package com.genome2d.components.renderables
 			setTileSize(p_tileWidth, p_tileHeight);
 		}
 		
-		public function setTile(p_tileIndex:int, p_tile:int):void {
+		public function setTile(p_tileIndex:int, p_tile:GTile):void {
 			if (p_tileIndex<0 || p_tileIndex>= _aTiles.length) return; 
 			_aTiles[p_tileIndex] = p_tile;
 		}

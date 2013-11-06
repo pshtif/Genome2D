@@ -80,7 +80,7 @@ package com.genome2d.context.postprocesses
 				p_context.setRenderTarget(_aPassTextures[0], _cMatrix);
 				
 				p_context.setCamera(Genome2D.getInstance().defaultCamera);
-				p_node.render(p_context, p_camera, _aPassTextures[0].region, false);
+				p_node.render(p_context, true, true, p_camera, _aPassTextures[0].region, false);
 			}
 			
 			var zero:GTexture = _aPassTextures[0];
@@ -90,13 +90,12 @@ package com.genome2d.context.postprocesses
 				p_context.setRenderTarget(_aPassTextures[i]);
 				p_context.draw(_aPassTextures[i-1], 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, _aPassTextures[i].region, _aPassFilters[i-1]);
 			}
-			
+
+            p_context.setRenderTarget(p_target);
 			if (p_target == null) {
-				p_context.setRenderTarget();
 				p_context.setCamera(p_camera);
 				p_context.draw(_aPassTextures[_iPasses-1], bounds.x-_iLeftMargin, bounds.y-_iTopMargin, 1, 1, 0, 1, 1, 1, 1, 1, p_maskRect, _aPassFilters[_iPasses-1]);
 			} else {
-				p_context.setRenderTarget(p_target);
 				p_context.draw(_aPassTextures[_iPasses-1], 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, p_target.region, _aPassFilters[_iPasses-1]);
 			}
 			_aPassTextures[0] = zero;

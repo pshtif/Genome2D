@@ -14,7 +14,7 @@ package com.genome2d.components.renderables
 	import com.genome2d.context.filters.GFilter;
 	import com.genome2d.core.GNode;
 	import com.genome2d.textures.GTexture;
-	
+
 	import flash.events.MouseEvent;
 	import flash.geom.Matrix3D;
 	import flash.geom.Rectangle;
@@ -36,7 +36,7 @@ package com.genome2d.components.renderables
 		/**
 		 * 	@private
 		 */
-		g2d var cTexture:GTexture;
+		public var cTexture:GTexture;
 		public function getTexture():GTexture {
 			return cTexture;
 		}
@@ -47,6 +47,8 @@ package com.genome2d.components.renderables
 		 * 	If this flag is true any node using this component will use pixel perfect mouse detection based on a data from this texture
 		 */
 		public var mousePixelEnabled:Boolean = false;
+
+        public var mousePadding:int = 0;
 		
 		/**
 		 * 	@private
@@ -60,7 +62,7 @@ package com.genome2d.components.renderables
 		 */
 		override public function render(p_context:GContext, p_camera:GCamera, p_maskRect:Rectangle):void {
 			if (cTexture == null) return;
-		
+
 			var transform:GTransform = cNode.cTransform;
             //trace(node, "tx:", transform.nWorldX, "ty:", transform.nWorldY, "tsx:", transform.nWorldScaleX, "tsy:", transform.nWorldScaleY, "tr:", transform.nWorldRotation);
 			p_context.draw(cTexture, transform.nWorldX, transform.nWorldY, transform.nWorldScaleX, transform.nWorldScaleY, transform.nWorldRotation, transform.nWorldRed, transform.nWorldGreen, transform.nWorldBlue, transform.nWorldAlpha, iBlendMode, p_maskRect, filter);
@@ -177,13 +179,13 @@ package com.genome2d.components.renderables
 		 */
 		override public function processMouseEvent(p_captured:Boolean, p_event:MouseEvent, p_position:Vector3D):Boolean {
 			if (p_captured && p_event.type == MouseEvent.MOUSE_UP) cNode.cMouseDown = null;
-			if (p_captured || cTexture == null) {
-				if (cNode.cMouseOver == cNode) cNode.handleMouseEvent(cNode, MouseEvent.MOUSE_OUT, Number.NaN, Number.NaN, p_event.buttonDown, p_event.ctrlKey);
+			if (cTexture == null) {
+				//if (cNode.cMouseOver == cNode) cNode.handleMouseEvent(cNode, MouseEvent.MOUSE_OUT, -5, -5, p_event.buttonDown, p_event.ctrlKey);
 				return false;
 			}
 	
-			var tWidth:Number = cTexture.width;// * cTexture.resampleScale;
-			var tHeight:Number = cTexture.height;// * cTexture.resampleScale;
+			var tWidth:Number = cTexture.width+mousePadding;
+			var tHeight:Number = cTexture.height+mousePadding;
 
 			var transformMatrix:Matrix3D = cNode.cTransform.getTransformedWorldTransformMatrix(tWidth, tHeight, 0, true);
 		
@@ -191,6 +193,11 @@ package com.genome2d.components.renderables
 			
 			localMousePosition.x = (localMousePosition.x+.5);
 			localMousePosition.y = (localMousePosition.y+.5);
+
+            if (p_captured) {
+                if (cNode.cMouseOver == cNode) cNode.handleMouseEvent(cNode, MouseEvent.MOUSE_OUT, localMousePosition.x*tWidth+cTexture.nPivotX, localMousePosition.y*tHeight+cTexture.nPivotY, p_event.buttonDown, p_event.ctrlKey);
+                return false;
+            }
 			
 			if (localMousePosition.x >= -cTexture.nPivotX/tWidth && localMousePosition.x <= 1-cTexture.nPivotX/tWidth && localMousePosition.y >= -cTexture.nPivotY/tHeight && localMousePosition.y <= 1-cTexture.nPivotY/tHeight) {
 				if (mousePixelEnabled && cTexture.getAlphaAtUV(localMousePosition.x+cTexture.pivotX/tWidth, localMousePosition.y+cTexture.nPivotY/tHeight) == 0) {

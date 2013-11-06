@@ -69,13 +69,16 @@ package com.genome2d.textures.factories
 			var type:int;
 			var transparent:Boolean = true;
 			switch (p_atfData[6]) {
+                case 0:
 				case 1:
 					type = GTextureSourceType.ATF_BGRA;
 					break;
+                case 2:
 				case 3:
 					type = GTextureSourceType.ATF_COMPRESSED;
 					transparent = false;
 					break;
+                case 4:
 				case 5:
 					type = GTextureSourceType.ATF_COMPRESSEDALPHA;
 					break;

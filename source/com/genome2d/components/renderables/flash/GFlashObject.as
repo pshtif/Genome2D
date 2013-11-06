@@ -121,8 +121,8 @@ package com.genome2d.components.renderables.flash
 			__mNativeMatrix = new Matrix();
 		}
 		
-		override public function update(p_deltaTime:Number, p_parentTransformUpdate:Boolean, p_parentColorUpdate:Boolean):void {
-			if (_doNative == null) return;
+		override public function update(p_deltaTime:Number):void {
+			if (_doNative == null || updateFrameRate != 0) return;
 			
 			invalidateTexture(false);
 			

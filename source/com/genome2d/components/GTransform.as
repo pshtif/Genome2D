@@ -10,7 +10,7 @@ package com.genome2d.components
 import com.genome2d.components.particles.GSimpleEmitter;
 import com.genome2d.core.GNode;
 	import com.genome2d.g2d;
-	
+
 	import flash.geom.Matrix3D;
 	import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
@@ -229,6 +229,7 @@ import com.genome2d.core.GNode;
 			rAbsoluteMaskRect = p_rect.clone();
 			rAbsoluteMaskRect.x += nWorldX;
 			rAbsoluteMaskRect.y += nWorldY;
+            bTransformDirty = true;
 		}
 		g2d var rAbsoluteMaskRect:Rectangle;
 		
@@ -242,7 +243,7 @@ import com.genome2d.core.GNode;
 		/**
 		 * 	@private
 		 */
-		g2d function invalidate(p_invalidateTransform:Boolean, p_invalidateColor:Boolean):void {	
+		g2d function invalidate(p_invalidateTransform:Boolean, p_invalidateColor:Boolean, p_makeValid:Boolean = true):void {
 			if (cNode.cParent == null) {
 				bColorDirty = bTransformDirty = false;
 				return;
@@ -284,7 +285,7 @@ import com.genome2d.core.GNode;
 							cNode.cBody.rotation = nWorldRotation;
 						}
 						
-						bTransformDirty = false;
+						if (p_makeValid) bTransformDirty = false;
 						__bWorldTransformMatrixDirty = true;
 					}
 				} 
@@ -299,6 +300,19 @@ import com.genome2d.core.GNode;
 				bColorDirty = false;
 			}
 		}
+
+        public function forceInvalidate():Boolean {
+            return recursiveInvalidate(this);
+        }
+
+        private function recursiveInvalidate(p_transform:GTransform):Boolean {
+            var parentTransformUpdate:Boolean = false;
+            if (p_transform.cNode.cParent != null) recursiveInvalidate(p_transform.cNode.cParent.cTransform);
+
+            parentTransformUpdate = parentTransformUpdate || bTransformDirty;
+            if (parentTransformUpdate) invalidate(true, false, false);
+            return parentTransformUpdate;
+        }
 		
 		public function setColor(p_red:Number=1, p_green:Number=1, p_blue:Number=1, p_alpha:Number=1):void {
 			red = p_red;

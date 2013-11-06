@@ -117,7 +117,7 @@ package com.genome2d.components.renderables
 			_cMaterial = GCameraTexturedParticlesBatchMaterial.getByHash(sHash);
 		}
 		
-		override public function update(p_deltaTime:Number, p_parentTransformUpdate:Boolean, p_parentColorUpdate:Boolean):void {
+		override public function update(p_deltaTime:Number):void {
 			nCurrentTime += p_deltaTime;
 		}
 		

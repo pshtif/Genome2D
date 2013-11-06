@@ -170,9 +170,19 @@ package com.genome2d.textures
 		
 		public function set width(p_value:int):void {
 			rRegion.width = iWidth = p_value;
-			
-			nUvScaleX = iWidth/cParent.iWidth;
+
+            if (cParent) {
+			    nUvScaleX = iWidth/cParent.iWidth;
+            } else {
+                nUvScaleX = iWidth/gpuWidth;
+            }
 		}
+
+        public function set height(p_value:int):void {
+            rRegion.height = iHeight = p_value;
+
+            nUvScaleY = iHeight/cParent.iHeight;
+        }
 		
 		/**
 		 * 	Get an alpha value at specified uv coordinates, its used internally for pixel precise mouse checking but you can also leverage this functionality as you want.

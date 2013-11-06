@@ -13,7 +13,8 @@ package com.genome2d.components
 	
 	import flash.events.MouseEvent;
 	import flash.events.TouchEvent;
-	import flash.geom.Rectangle;
+import flash.geom.Matrix;
+import flash.geom.Rectangle;
 	import flash.geom.Vector3D;
 	import flash.utils.describeType;
 	import flash.utils.getQualifiedClassName;
@@ -166,7 +167,7 @@ package com.genome2d.components
 		/**
 		 * 	Abstract method that should be overriden and implemented if you are creating your own components, its called each time a node that uses this component is being updated
 		 */
-		public function update(p_deltaTime:Number, p_parentTransformUpdate:Boolean, p_parentColorUpdate:Boolean):void {
+		public function update(p_deltaTime:Number):void {
 			
 		}
 		/**

@@ -99,7 +99,7 @@ package com.genome2d.components.renderables
 			return _nHeight*cNode.cTransform.nWorldScaleY;
 		}
 			
-		override public function update(p_deltaTime:Number, p_parentTransformUpdate:Boolean, p_parentColorUpdate:Boolean):void {
+		override public function update(p_deltaTime:Number):void {
 			if (!_bInvalidate) return;
 		
 			invalidateText();
@@ -124,6 +124,7 @@ package com.genome2d.components.renderables
 				}
 				texture = _cTextureAtlas.getTexture(String(_sText.charCodeAt(i)));
 				if (texture == null) throw new GError("Texture for character "+_sText.charAt(i)+" with code "+_sText.charCodeAt(i)+" not found!");
+
 				if (charNode == null) {
 					charSprite = GNodeFactory.createNodeWithComponent(GSprite) as GSprite;
 					charNode = charSprite.cNode;
@@ -163,8 +164,8 @@ package com.genome2d.components.renderables
 			switch (_iAlign) {
 				case GTextureTextAlignType.MIDDLE_CENTER:
 					for (node = cNode.firstChild; node; node = node.next) {
-						node.transform.x -= _nWidth/2;
-						node.transform.y -= _nHeight/2;
+						node.transform.x -= int(_nWidth/2);
+						node.transform.y -= int(_nHeight/2);
 					}
 					break;
 				case GTextureTextAlignType.TOP_RIGHT:
@@ -176,13 +177,13 @@ package com.genome2d.components.renderables
 					break;
 				case GTextureTextAlignType.MIDDLE_RIGHT:
 					for (node = cNode.firstChild; node; node = node.next) {
-						node.transform.x -= _nWidth
-						node.transform.y -= _nHeight/2;
+						node.transform.x -= _nWidth;
+						node.transform.y -= int(_nHeight/2);
 					}
 					break;
                 case GTextureTextAlignType.MIDDLE_LEFT:
                     for (node = cNode.firstChild; node; node = node.next) {
-                        node.transform.y -= _nHeight/2;
+                        node.transform.y -= int(_nHeight/2);
                     }
                     break;
 			}

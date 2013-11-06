@@ -65,22 +65,28 @@ package com.genome2d.textures.factories
          *  @param p_chars characters to be included
          *  @param p_forceMod2 force characters to be of even size to avoid floating point centers
 		 */
-		static public function createFromFont(p_id:String, p_format:TextFormat, p_chars:String, p_forceMod2:Boolean = false):GTextureAtlas {			
+		static public function createFromFont(p_id:String, p_format:TextFormat, p_chars:String, p_horizontalPadding:int = 0, p_verticalPadding:int = 0, p_filters:Array = null, p_forceMod2:Boolean = false):GTextureAtlas {
 			var text:TextField = new TextField();
 			text.embedFonts = true;
 			text.defaultTextFormat = p_format;
 			text.multiline = false;
 			text.autoSize = TextFieldAutoSize.LEFT;
+
+            if (p_filters != null) {
+                text.filters = p_filters;
+            }
 			
 			var bitmaps:Vector.<BitmapData> = new Vector.<BitmapData>();
 			var ids:Vector.<String> = new Vector.<String>();
+            var matrix:Matrix = new Matrix();
+            matrix.translate(p_horizontalPadding, p_verticalPadding);
 			
 			for (var i:int = 0; i<p_chars.length; ++i) {
 				text.text = p_chars.charAt(i);
 				var width:int = (text.width%2 != 0 && p_forceMod2) ? text.width+1 : text.width;
 				var height:int = (text.height%2 != 0 && p_forceMod2) ? text.height+1 : text.height;
-				var bitmapData:BitmapData = new BitmapData(width, height, true, 0x0);
-				bitmapData.draw(text);
+				var bitmapData:BitmapData = new BitmapData(width+p_horizontalPadding*2, height+p_verticalPadding*2, true, 0x0);
+				bitmapData.draw(text, matrix);
 				bitmaps.push(bitmapData);
 				
 				ids.push(p_chars.charCodeAt(i));
@@ -192,13 +198,16 @@ package com.genome2d.textures.factories
 			var type:int;
 			var transparent:Boolean = true;
 			switch (p_atfData[6]) {
+                case 0:
 				case 1:
 					type = GTextureSourceType.ATF_BGRA;
 					break;
+                case 2:
 				case 3:
 					type = GTextureSourceType.ATF_COMPRESSED;
 					transparent = false;
 					break;
+                case 4:
 				case 5:
 					type = GTextureSourceType.ATF_COMPRESSEDALPHA;
 					break;

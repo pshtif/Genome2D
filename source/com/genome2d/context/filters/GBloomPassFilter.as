@@ -36,7 +36,7 @@ package com.genome2d.context.filters
 				"add ft3.xyz, ft3.xyz, ft2.xxx              \n" +
 				"mul ft1.xyz, ft3.xyz, fc2.yyy              \n" +
 				"sat ft2.xyz, ft0.xyz                       \n" +
-				"sub ft2.xyz, fc0.www, ft2.xyz              \n" +
+				"sub ft2.xyz, fc0.yyy, ft2.xyz              \n" +
 				"mul ft1.xyz, ft1.xyz, ft2.xyz              \n" +
 				"add ft0, ft0, ft1              			\n";
 			

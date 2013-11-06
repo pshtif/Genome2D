@@ -9,11 +9,11 @@ package com.genome2d.components.particles
 {
 	import com.genome2d.g2d;
 	import com.genome2d.components.GCamera;
-	import com.genome2d.components.particles.fields.GField;
 	import com.genome2d.components.renderables.GRenderable;
 	import com.genome2d.context.GContext;
 	import com.genome2d.core.GNode;
-	import com.genome2d.textures.GTexture;
+import com.genome2d.particles.GSimpleParticle;
+import com.genome2d.textures.GTexture;
 	
 	import flash.geom.Rectangle;
 	
@@ -187,7 +187,7 @@ package com.genome2d.components.particles
 			emit = false;
 		}
 		
-		override public function update(p_deltaTime:Number, p_parentTransformUpdate:Boolean, p_parentColorUpdate:Boolean):void {
+		override public function update(p_deltaTime:Number):void {
 			__nLastUpdateTime = p_deltaTime;
 
 			if (emit) {
@@ -228,7 +228,7 @@ package com.genome2d.components.particles
 				var tx:Number = cNode.cTransform.nWorldX + (particle.nX-cNode.cTransform.nWorldX)*1//cNode.cTransform.nWorldScaleX;
 				var ty:Number = cNode.cTransform.nWorldY + (particle.nY-cNode.cTransform.nWorldY)*1//cNode.cTransform.nWorldScaleY;
 				
-				p_context.draw(__cTexture, tx, ty, particle.nScaleX*cNode.cTransform.nWorldScaleX, particle.nScaleY*cNode.cTransform.nWorldScaleY, particle.nRotation, particle.nRed, particle.nGreen, particle.nBlue, particle.nAlpha, iBlendMode, p_maskRect);
+				p_context.draw(__cTexture, tx, ty, particle.nScaleX*cNode.cTransform.nWorldScaleX, particle.nScaleY*cNode.cTransform.nWorldScaleY, particle.nRotation, particle.nRed, particle.nGreen, particle.nBlue, particle.nAlpha*cNode.cTransform.nWorldAlpha, iBlendMode, p_maskRect);
 
 				particle = next;
 			}
@@ -255,14 +255,6 @@ package com.genome2d.components.particles
 		
 		public function clear(p_disposeCachedParticles:Boolean = false):void {
 			// TODO
-		}
-		
-		g2d var iFieldsCount:int = 0;
-		g2d var aFields:Vector.<GField> = new Vector.<GField>();
-		public function addField(p_field:GField):void {
-			if (p_field == null) throw new Error("Field cannot be null.");
-			iFieldsCount++;
-			aFields.push(p_field);
 		}
 	}
 }
