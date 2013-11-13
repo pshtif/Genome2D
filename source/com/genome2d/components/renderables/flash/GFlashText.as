@@ -22,7 +22,7 @@ package com.genome2d.components.renderables.flash
 		
 		public function set textFormat(p_textFormat:TextFormat):void {
 			__tfTextField.defaultTextFormat = p_textFormat;
-			if (__tfTextField.text.length > 0) __tfTextField.setTextFormat(p_textFormat, 0, __tfTextField.text.length-1);
+			if (__tfTextField.text.length > 0) __tfTextField.setTextFormat(p_textFormat, 0, __tfTextField.text.length);
 			
 			_bInvalidate = true;
 		}
