@@ -40,7 +40,7 @@ package
 		
 		// Initialization callback
 		protected function onGenome2DInitialized():void {
-			__cTexture = GTextureFactory.createFromAsset("crate", CrateGFX, false);
+			__cTexture = GTextureFactory.createFromAsset("crate", CrateGFX	);
 			
 			// Hook up a callback at the end of rendering pipeline
 			Genome2D.getInstance().onPostRender.add(onPostRender);

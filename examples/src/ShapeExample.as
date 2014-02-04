@@ -35,7 +35,7 @@ package
 			// Create a red texture
 			GTextureFactory.createFromColor("red", 0xFF0000, 32, 32);
 			// Create crate texture from embedded asset to showcase textured shape
-			GTextureFactory.createFromAsset("crate", CrateGFX, false);
+			GTextureFactory.createFromAsset("crate", CrateGFX);
 			
 			createTriangle();
 			createHexagon();
