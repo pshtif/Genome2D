@@ -5,7 +5,6 @@ import com.genome2d.textures.GTextureSourceType;
 import flash.geom.Rectangle;
 import flash.utils.ByteArray;
 import com.genome2d.error.GError;
-import com.genome2d.assets.GImageAsset;
 import flash.display.Bitmap;
 import flash.display.BitmapData;
 
@@ -33,12 +32,15 @@ public class GTextureFactory {
             case 0:
             case 1:
                 type = GTextureSourceType.ATF_BGRA;
+                break;
             case 2:
             case 3:
                 type = GTextureSourceType.ATF_COMPRESSED;
+                break;
             case 4:
             case 5:
                 type = GTextureSourceType.ATF_COMPRESSEDALPHA;
+                break;
         }
         var width:Number = Math.pow(2, p_atfData[offset+1]);
         var height:Number = Math.pow(2, p_atfData[offset+2]);

@@ -23,8 +23,7 @@ import com.genome2d.signals.GNodeMouseSignal;
 import flash.geom.Matrix;
 import flash.geom.Rectangle;
 
-import msignal.Signal0;
-import msignal.Signal1;
+import org.osflash.signals.Signal;
 
 public class GNode
 {
@@ -236,34 +235,34 @@ public class GNode
 	public var mouseEnabled:Boolean = false;
 	
 	// Mouse signals
-	private var g2d_onMouseDown:Signal1;
-	public function get onMouseDown():Signal1 {
-		if (g2d_onMouseDown == null) g2d_onMouseDown = new Signal1(GMouseSignal);
+	private var g2d_onMouseDown:Signal;
+	public function get onMouseDown():Signal {
+		if (g2d_onMouseDown == null) g2d_onMouseDown = new Signal(GMouseSignal);
 		return g2d_onMouseDown;
 	}
-	private var g2d_onMouseMove:Signal1;
-	public function get onMouseMove():Signal1 {
-		if (g2d_onMouseMove == null) g2d_onMouseMove = new Signal1(GMouseSignal);
+	private var g2d_onMouseMove:Signal;
+	public function get onMouseMove():Signal {
+		if (g2d_onMouseMove == null) g2d_onMouseMove = new Signal(GMouseSignal);
 		return g2d_onMouseMove;
 	}
-	private var g2d_onMouseClick:Signal1;
-	private function get onMouseClick():Signal1 {
-		if (g2d_onMouseClick == null) g2d_onMouseClick = new Signal1(GMouseSignal);
+	private var g2d_onMouseClick:Signal;
+	private function get onMouseClick():Signal {
+		if (g2d_onMouseClick == null) g2d_onMouseClick = new Signal(GMouseSignal);
 		return g2d_onMouseClick;
 	}
-	private var g2d_onMouseUp:Signal1;
-	private function get onMouseUp():Signal1 {
-		if (g2d_onMouseUp == null) g2d_onMouseUp = new Signal1(GMouseSignal);
+	private var g2d_onMouseUp:Signal;
+	private function get onMouseUp():Signal {
+		if (g2d_onMouseUp == null) g2d_onMouseUp = new Signal(GMouseSignal);
 		return g2d_onMouseUp;
 	}
-	private var g2d_onMouseOver:Signal1;
-	private function get_onMouseOver():Signal1 {
-		if (g2d_onMouseOver == null) g2d_onMouseOver = new Signal1(GMouseSignal);
+	private var g2d_onMouseOver:Signal;
+	private function get_onMouseOver():Signal {
+		if (g2d_onMouseOver == null) g2d_onMouseOver = new Signal(GMouseSignal);
 		return g2d_onMouseOver;
 	}
-	private var g2d_onMouseOut:Signal1;
-	private function get_onMouseOut():Signal1 {
-		if (g2d_onMouseOut == null) g2d_onMouseOut = new Signal1(GMouseSignal);
+	private var g2d_onMouseOut:Signal;
+	private function get_onMouseOut():Signal {
+		if (g2d_onMouseOut == null) g2d_onMouseOut = new Signal(GMouseSignal);
 		return g2d_onMouseOut;
 	}
 
@@ -413,15 +412,15 @@ public class GNode
         return g2d_numChildren;
     }
 
-    private var g2d_onAddedToStage:Signal0;
-    public function get onAddedToStage():Signal0 {
-        if (g2d_onAddedToStage == null) g2d_onAddedToStage = new Signal0();
+    private var g2d_onAddedToStage:Signal;
+    public function get onAddedToStage():Signal {
+        if (g2d_onAddedToStage == null) g2d_onAddedToStage = new Signal();
         return g2d_onAddedToStage;
     }
 
-    private var g2d_onRemovedFromStage:Signal0;
-    public function get onRemovedFromStage():Signal0 {
-        if (g2d_onRemovedFromStage == null) g2d_onRemovedFromStage = new Signal0();
+    private var g2d_onRemovedFromStage:Signal;
+    public function get onRemovedFromStage():Signal {
+        if (g2d_onRemovedFromStage == null) g2d_onRemovedFromStage = new Signal();
         return g2d_onRemovedFromStage;
     }
 	

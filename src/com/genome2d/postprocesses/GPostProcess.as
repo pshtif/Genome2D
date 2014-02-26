@@ -31,7 +31,7 @@ public class GPostProcess {
     static private var g2d_count:int = 0;
     private var g2d_id:String;
     public function GPostProcess(p_passes:int = 1, p_filters:Vector.<GFilter> = null) {
-        g2d_id = Std.string(g2d_count++);
+        g2d_id = String(g2d_count++);
         if (p_passes<1) throw "There are no passes";
 
         g2d_passes = p_passes;

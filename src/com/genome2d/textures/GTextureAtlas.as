@@ -14,7 +14,7 @@ public class GTextureAtlas extends GContextTexture {
         return g2d_textures[p_subId];
     }
 
-    public function GTextureAtlas(p_context:IContext, p_id:String, p_sourceType:int, p_source:Dynamic, p_region:Rectangle, p_uploadCallback:Function) {
+    public function GTextureAtlas(p_context:IContext, p_id:String, p_sourceType:int, p_source:Object, p_region:Rectangle, p_uploadCallback:Function) {
         super(p_context, p_id, p_sourceType, p_source, p_region);
 
         g2d_type = GTextureType.ATLAS;

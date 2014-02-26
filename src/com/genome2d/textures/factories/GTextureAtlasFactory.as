@@ -41,7 +41,7 @@ public class GTextureAtlasFactory
 	 */	
 	static public function createFromBitmapDataAndXml(p_id:String, p_bitmapData:BitmapData, p_xml:XML):GTextureAtlas {
         if (!GTextureUtils.isValidTextureSize(p_bitmapData.width) || !GTextureUtils.isValidTextureSize(p_bitmapData.height)) throw new GError();
-		var textureAtlas:GTextureAtlas = new GTextureAtlas(g2d_context, p_id, GTextureSourceType.BITMAPDATA, p_bitmapData as Dynamic, p_bitmapData.rect, null);
+		var textureAtlas:GTextureAtlas = new GTextureAtlas(g2d_context, p_id, GTextureSourceType.BITMAPDATA, p_bitmapData, p_bitmapData.rect, null);
 
         for (var i:int = 0; i<p_xml.children().length(); ++i) {
             var node:XML = p_xml.children()[i];
@@ -110,7 +110,7 @@ public class GTextureAtlasFactory
         var packed:BitmapData = new BitmapData(p_packer.getWidth(), p_packer.getHeight(), true, 0x0);
         p_packer.draw(packed);
 
-        var textureAtlas:GTextureAtlas = new GTextureAtlas(g2d_context, p_id, GTextureSourceType.BITMAPDATA, packed as Dynamic, packed.rect, null);
+        var textureAtlas:GTextureAtlas = new GTextureAtlas(g2d_context, p_id, GTextureSourceType.BITMAPDATA, packed, packed.rect, null);
 
         var count:int = p_packer.getRectangles().length;
         for (i = 0; i<count; ++i) {
@@ -132,17 +132,20 @@ public class GTextureAtlasFactory
             case 0:
             case 1:
                 type = GTextureSourceType.ATF_BGRA;
+                break;
             case 2:
             case 3:
                 type = GTextureSourceType.ATF_COMPRESSED;
+                break;
             case 4:
             case 5:
                 type = GTextureSourceType.ATF_COMPRESSEDALPHA;
+                break;
         }
         var width:Number = Math.pow(2, p_atfData[offset+1]);
         var height:Number = Math.pow(2, p_atfData[offset+2]);
 
-        var textureAtlas:GTextureAtlas = new GTextureAtlas(g2d_context, p_id, type, p_atfData as Dynamic, new Rectangle(0,0,width,height), null);
+        var textureAtlas:GTextureAtlas = new GTextureAtlas(g2d_context, p_id, type, p_atfData, new Rectangle(0,0,width,height), null);
 
         for (var i:int = 0; i<p_xml.children().length(); ++i) {
             var node:XML = p_xml.children()[i];

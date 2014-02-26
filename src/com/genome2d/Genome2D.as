@@ -1,22 +1,17 @@
 package com.genome2d {
 
-import com.genome2d.context.IContext;
 import com.genome2d.components.GCameraController;
+import com.genome2d.context.GContextConfig;
+import com.genome2d.context.IContext;
+import com.genome2d.error.GError;
 import com.genome2d.node.GNode;
 import com.genome2d.signals.GMouseSignal;
-import com.genome2d.error.GError;
-import com.genome2d.textures.GTextureAtlas;
 import com.genome2d.textures.factories.GTextureAtlasFactory;
 import com.genome2d.textures.factories.GTextureFactory;
 
 import flash.geom.Matrix;
 
-import msignal.Signal;
-
-import com.genome2d.context.GContextConfig;
-
-import msignal.Signal0;
-import msignal.Signal1;
+import org.osflash.signals.Signal;
 
 /**
  * ...
@@ -48,28 +43,28 @@ public class Genome2D
 	//public var physics:GPhysics;
 
     // Genome2D signals
-    private var g2d_onInitialized:Signal0;
-	public function get onInitialized():Signal0 {
+    private var g2d_onInitialized:Signal;
+	public function get onInitialized():Signal {
         return g2d_onInitialized;
     }
 
-    private var g2d_onFailed:Signal0;
-    public function get onFailed():Signal0 {
+    private var g2d_onFailed:Signal;
+    public function get onFailed():Signal {
         return g2d_onFailed;
     }
 
-    private var g2d_onUpdate:Signal1;
-    public function get onUpdate():Signal1 {
+    private var g2d_onUpdate:Signal;
+    public function get onUpdate():Signal {
         return g2d_onUpdate;
     }
 
-    private var g2d_onPreRender:Signal0;
-    public function get onPreRender():Signal0 {
+    private var g2d_onPreRender:Signal;
+    public function get onPreRender():Signal {
         return g2d_onPreRender;
     }
 
-    private var g2d_onPostRender:Signal0;
-    public function get onPostRender():Signal0 {
+    private var g2d_onPostRender:Signal;
+    public function get onPostRender():Signal {
         return g2d_onPostRender;
     }
 
@@ -92,7 +87,7 @@ public class Genome2D
         return g2d_root;
     }
 
-	private var g2d_context:IContext;
+	public var g2d_context:IContext;
 	public function getContext():IContext {
 		return g2d_context;
 	}
@@ -129,12 +124,12 @@ public class Genome2D
         g2d_cameras = new Vector.<GCameraController>();
 
         // Initialize signals
-		g2d_onInitialized = new Signal0();
-		g2d_onFailed = new Signal0();
+		g2d_onInitialized = new Signal();
+		g2d_onFailed = new Signal();
 
-        g2d_onUpdate = new Signal1();
-		g2d_onPreRender = new Signal0();
-		g2d_onPostRender = new Signal0();
+        g2d_onUpdate = new Signal();
+		g2d_onPreRender = new Signal();
+		g2d_onPostRender = new Signal();
 	}
 
     /**
@@ -145,8 +140,8 @@ public class Genome2D
 
         g2d_contextConfig = p_config;
 		g2d_context = new p_config.contextClass(g2d_contextConfig);
-		g2d_context.onInitialized.add(g2d_contextInitializedHandler);
-		g2d_context.onFailed.add(g2d_contextFailedHandler);
+		g2d_context.onInitialized(g2d_contextInitializedHandler);
+		g2d_context.onFailed(g2d_contextFailedHandler);
 		g2d_context.init();
 	}
 
@@ -156,8 +151,8 @@ public class Genome2D
 	private function g2d_contextInitializedHandler():void {
         GTextureFactory.g2d_context = GTextureAtlasFactory.g2d_context = g2d_context;
 
-		g2d_context.onFrame.add(g2d_frameHandler);
-        g2d_context.onMouseInteraction.add(g2d_contextMouseSignalHandler);
+		g2d_context.onFrame(g2d_frameHandler);
+        g2d_context.onMouseInteraction(g2d_contextMouseSignalHandler);
 		
 		onInitialized.dispatch();
 	}
@@ -168,8 +163,8 @@ public class Genome2D
 	private function g2d_contextFailedHandler():void {
         if (g2d_contextConfig.fallbackContextClass != null) {
             g2d_context = new g2d_contextConfig.fallbackContextClass(g2d_contextConfig);
-            g2d_context.onInitialized.add(g2d_contextInitializedHandler);
-            g2d_context.onFailed.add(g2d_contextFailedHandler);
+            g2d_context.onInitialized(g2d_contextInitializedHandler);
+            g2d_context.onFailed(g2d_contextFailedHandler);
             g2d_context.init();
         }
 
