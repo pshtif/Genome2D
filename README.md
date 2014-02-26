@@ -4,5 +4,5 @@ Genome2D is a 2D framework for AIR/Flash developers that want to leverage the GP
 
 # Resources and Links
 
-- [Forum] (http://blog.flash-core.com/?forum=genome2d-forum)
+- [Forum] (https://groups.google.com/forum/#!forum/genome2d)
 - [API Docs] (http://docs.genome2d.com/)
