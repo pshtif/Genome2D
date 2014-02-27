@@ -237,32 +237,32 @@ public class GNode
 	// Mouse signals
 	private var g2d_onMouseDown:Signal;
 	public function get onMouseDown():Signal {
-		if (g2d_onMouseDown == null) g2d_onMouseDown = new Signal(GMouseSignal);
+		if (g2d_onMouseDown == null) g2d_onMouseDown = new Signal(GNodeMouseSignal);
 		return g2d_onMouseDown;
 	}
 	private var g2d_onMouseMove:Signal;
 	public function get onMouseMove():Signal {
-		if (g2d_onMouseMove == null) g2d_onMouseMove = new Signal(GMouseSignal);
+		if (g2d_onMouseMove == null) g2d_onMouseMove = new Signal(GNodeMouseSignal);
 		return g2d_onMouseMove;
 	}
 	private var g2d_onMouseClick:Signal;
 	private function get onMouseClick():Signal {
-		if (g2d_onMouseClick == null) g2d_onMouseClick = new Signal(GMouseSignal);
+		if (g2d_onMouseClick == null) g2d_onMouseClick = new Signal(GNodeMouseSignal);
 		return g2d_onMouseClick;
 	}
 	private var g2d_onMouseUp:Signal;
 	private function get onMouseUp():Signal {
-		if (g2d_onMouseUp == null) g2d_onMouseUp = new Signal(GMouseSignal);
+		if (g2d_onMouseUp == null) g2d_onMouseUp = new Signal(GNodeMouseSignal);
 		return g2d_onMouseUp;
 	}
 	private var g2d_onMouseOver:Signal;
 	private function get_onMouseOver():Signal {
-		if (g2d_onMouseOver == null) g2d_onMouseOver = new Signal(GMouseSignal);
+		if (g2d_onMouseOver == null) g2d_onMouseOver = new Signal(GNodeMouseSignal);
 		return g2d_onMouseOver;
 	}
 	private var g2d_onMouseOut:Signal;
 	private function get_onMouseOut():Signal {
-		if (g2d_onMouseOut == null) g2d_onMouseOut = new Signal(GMouseSignal);
+		if (g2d_onMouseOut == null) g2d_onMouseOut = new Signal(GNodeMouseSignal);
 		return g2d_onMouseOut;
 	}
 
@@ -279,7 +279,7 @@ public class GNode
         var i:int;
 		if (mouseChildren) {
 			for (i = g2d_numChildren-1; i>=0; --i) {
-				p_captured = g2d_children[-i].processContextMouseSignal(p_captured, p_cameraX, p_cameraY, p_signal, p_camera) || p_captured;
+				p_captured = g2d_children[i].processContextMouseSignal(p_captured, p_cameraX, p_cameraY, p_signal, p_camera) || p_captured;
 			}
 		}
 		

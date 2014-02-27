@@ -46,13 +46,13 @@ public class GTextureAtlasFactory
         for (var i:int = 0; i<p_xml.children().length(); ++i) {
             var node:XML = p_xml.children()[i];
 
-            var region:Rectangle = new Rectangle(int(node.get("x")), int(node.get("y")), int(node.get("width")), int(node.get("height")));
-			
-			var pivotX:Number = (node.get("frameX") == null || node.get("frameWidth") == null) ? 0 : (int(node.get("frameWidth"))-region.width)/2 + int(node.get("frameX"));
-			var pivotY:Number = (node.get("frameY") == null || node.get("frameHeight") == null) ? 0 : (int(node.get("frameHeight"))-region.height)/2 + int(node.get("frameY"));
+            var region:Rectangle = new Rectangle(int(node.@x), int(node.@y), int(node.@width), int(node.@height));
 
-			textureAtlas.addSubTexture(node.get("name"), region, pivotX, pivotY);
-		}
+            var pivotX:Number = (node.@frameX == undefined && node.@frameWidth == undefined) ? 0 : Number(node.@frameWidth-region.width)/2 + Number(node.@frameX);
+            var pivotY:Number = (node.@frameY == undefined && node.@frameHeight == undefined) ? 0 : Number(node.@frameHeight-region.height)/2 + Number(node.@frameY);
+
+            textureAtlas.addSubTexture(node.@name, region, pivotX, pivotY);
+        }
 
 		textureAtlas.invalidateNativeTexture(false);
 		return textureAtlas;
@@ -150,12 +150,12 @@ public class GTextureAtlasFactory
         for (var i:int = 0; i<p_xml.children().length(); ++i) {
             var node:XML = p_xml.children()[i];
 
-            var region:Rectangle = new Rectangle(int(node.get("x")), int(node.get("y")), int(node.get("width")), int(node.get("height")));
+            var region:Rectangle = new Rectangle(int(node.@x), int(node.@y), int(node.@width), int(node.@height));
 
-            var pivotX:Number = (node.get("frameX") == null || node.get("frameWidth") == null) ? 0 : (int(node.get("frameWidth"))-region.width)/2 + int(node.get("frameX"));
-            var pivotY:Number = (node.get("frameY") == null || node.get("frameHeight") == null) ? 0 : (int(node.get("frameHeight"))-region.height)/2 + int(node.get("frameY"));
+            var pivotX:Number = (node.@frameX == undefined && node.@frameWidth == undefined) ? 0 : Number(node.@frameWidth-region.width)/2 + Number(node.@frameX);
+            var pivotY:Number = (node.@frameY == undefined && node.@frameHeight == undefined) ? 0 : Number(node.@frameHeight-region.height)/2 + Number(node.@frameY);
 
-            textureAtlas.addSubTexture(node.get("name"), region, pivotX, pivotY);
+            textureAtlas.addSubTexture(node.@name, region, pivotX, pivotY);
         }
 /**/
         textureAtlas.invalidateNativeTexture(false);
