@@ -28,7 +28,7 @@ public class GTextureFactory {
         if (atf != "ATF") throw new GError("Invalid ATF data");
         var type:int = GTextureSourceType.ATF_BGRA;
         var offset:int = p_atfData[6] == 255 ? 12 : 6;
-        switch (p_atfData[6]) {
+        switch (p_atfData[offset]) {
             case 0:
             case 1:
                 type = GTextureSourceType.ATF_BGRA;

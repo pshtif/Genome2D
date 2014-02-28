@@ -151,7 +151,7 @@ class GTextureText extends GComponent implements IRenderable
 				offsetY += (texture != null ? texture.height + g2d_lineSpace : g2d_lineSpace);
 				continue;
             }
-			texture = g2d_textureAtlas.getSubTexture(Std.string(g2d_text.charCodeAt(i)));
+			texture = g2d_textureAtlas.getSubTexture(String(g2d_text.charCodeAt(i)));
 			if (texture == null) continue;//throw new GError("Texture for character "+g2d_text.charAt(i)+" with code "+g2d_text.charCodeAt(i)+" not found!");
 			if (i>=node.numChildren) {
 				charSprite = GNodeFactory.createNodeWithComponent(GSprite) as GSprite;

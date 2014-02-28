@@ -17,7 +17,7 @@ public class GParticleSystem extends GComponent implements IRenderable
 {
     public var blendMode:int = 1;
 
-    override public function bindFromPrototype(p_prototype:Xml):void {
+    override public function bindFromPrototype(p_prototype:XML):void {
         super.bindFromPrototype(p_prototype);
     }
 
