@@ -28,7 +28,6 @@ public class GTextureAtlasFactory
         var bitmap:Bitmap = new p_bitmapAsset();
         var data:String = new p_xmlAsset();
         var xml:XML = XML(data);
-
         return createFromBitmapDataAndXml(p_id, bitmap.bitmapData, xml);
     }
 

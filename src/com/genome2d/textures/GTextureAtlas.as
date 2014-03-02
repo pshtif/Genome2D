@@ -31,7 +31,7 @@ public class GTextureAtlas extends GContextTexture {
     }
 
     public function addSubTexture(p_subId:String, p_region:Rectangle, p_pivotX:Number = 0, p_pivotY:Number = 0):GTexture {
-        var texture:GTexture = new GTexture(g2d_context, g2d_id+"_"+p_subId, g2d_sourceType, g2d_nativeSource, p_region, g2d_format, p_pivotX, p_pivotY);
+        var texture:GTexture = new GTexture(g2d_context, g2d_id+"_"+p_subId, g2d_sourceType, g2d_nativeSource, p_region, g2d_format, p_pivotX, p_pivotY, this);
         texture.g2d_subId = p_subId;
         texture.g2d_filteringType = g2d_filteringType;
         texture.nativeTexture = nativeTexture;
