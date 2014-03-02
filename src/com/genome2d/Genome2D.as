@@ -250,11 +250,9 @@ public class Genome2D
      *  Context mouse interaction handler
      **/
 	private function g2d_contextMouseSignalHandler(p_signal:GMouseSignal):void {
-		var captured:Boolean = false;
-
         // If there is no camera process the signal directly by root node
 		if (g2d_cameras.length == 0) {
-            root.processContextMouseSignal(captured, p_signal.x, p_signal.y, p_signal, null);
+            root.processContextMouseSignal(p_signal.nativeCaptured, p_signal.x, p_signal.y, p_signal, null);
         // If there are cameras we need to process the signal through them
 		} else {
             var i:int;
@@ -263,7 +261,7 @@ public class Genome2D
 				g2d_cameras[i].g2d_capturedThisFrame = false;
 			}
             for (i = 0; i<cameraCount; ++i) {
-                g2d_cameras[i].captureMouseEvent(g2d_context, captured, p_signal);
+                g2d_cameras[i].captureMouseEvent(g2d_context, p_signal.nativeCaptured, p_signal);
             }
 		}
 	}
