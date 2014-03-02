@@ -28,15 +28,6 @@ public class GComponent
 	
 	public var g2d_lookupClass:Class;
 	
-	/**
-	 * 	@private
-	 */
-	public var g2d_previous:GComponent;
-	/**
-	 * 	@private
-	 */
-	public var g2d_next:GComponent;
-	
 	protected var g2d_node:GNode;
 	public function get node():GNode {
 		return g2d_node;
@@ -156,11 +147,7 @@ public class GComponent
 	 */
 	public function dispose():void {
 		g2d_active = false;
-		
 		g2d_node = null;
-		
-		g2d_next = null;
-		g2d_previous = null;
 	}
 }
 }

@@ -6,7 +6,7 @@ import flash.utils.Dictionary;
 
 public class GTextureAtlas extends GContextTexture {
     static public function getTextureAtlasById(p_id:String):GTextureAtlas {
-        return GContextTexture.getTextureBaseById(p_id) as GTextureAtlas;
+        return GContextTexture.getContextTextureById(p_id) as GTextureAtlas;
     }
 
     private var g2d_textures:Dictionary;
@@ -14,8 +14,8 @@ public class GTextureAtlas extends GContextTexture {
         return g2d_textures[p_subId];
     }
 
-    public function GTextureAtlas(p_context:IContext, p_id:String, p_sourceType:int, p_source:Object, p_region:Rectangle, p_uploadCallback:Function) {
-        super(p_context, p_id, p_sourceType, p_source, p_region);
+    public function GTextureAtlas(p_context:IContext, p_id:String, p_sourceType:int, p_source:Object, p_region:Rectangle, p_format:String, p_uploadCallback:Function) {
+        super(p_context, p_id, p_sourceType, p_source, p_region, p_format);
 
         g2d_type = GTextureType.ATLAS;
         g2d_textures = new Dictionary(false);
@@ -25,16 +25,16 @@ public class GTextureAtlas extends GContextTexture {
         super.invalidateNativeTexture(p_reinitialize);
 
         for each (var texture:GTexture in g2d_textures) {
-            texture.g2d_nativeTexture = g2d_nativeTexture;
-            texture.g2d_atfType = g2d_atfType;
+            texture.nativeTexture = nativeTexture;
+            texture.atfType = atfType;
         }
     }
 
     public function addSubTexture(p_subId:String, p_region:Rectangle, p_pivotX:Number = 0, p_pivotY:Number = 0):GTexture {
-        var texture:GTexture = new GTexture(g2d_context, g2d_id+"_"+p_subId, g2d_sourceType, g2d_nativeSource, p_region, p_pivotX, p_pivotY, this);
+        var texture:GTexture = new GTexture(g2d_context, g2d_id+"_"+p_subId, g2d_sourceType, g2d_nativeSource, p_region, g2d_format, p_pivotX, p_pivotY);
         texture.g2d_subId = p_subId;
         texture.g2d_filteringType = g2d_filteringType;
-        texture.g2d_nativeTexture = g2d_nativeTexture;
+        texture.nativeTexture = nativeTexture;
 
         g2d_textures[p_subId] = texture;
 

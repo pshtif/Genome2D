@@ -246,22 +246,22 @@ public class GNode
 		return g2d_onMouseMove;
 	}
 	private var g2d_onMouseClick:Signal;
-	private function get onMouseClick():Signal {
+	public function get onMouseClick():Signal {
 		if (g2d_onMouseClick == null) g2d_onMouseClick = new Signal(GNodeMouseSignal);
 		return g2d_onMouseClick;
 	}
 	private var g2d_onMouseUp:Signal;
-	private function get onMouseUp():Signal {
+	public function get onMouseUp():Signal {
 		if (g2d_onMouseUp == null) g2d_onMouseUp = new Signal(GNodeMouseSignal);
 		return g2d_onMouseUp;
 	}
 	private var g2d_onMouseOver:Signal;
-	private function get_onMouseOver():Signal {
+	public function get_onMouseOver():Signal {
 		if (g2d_onMouseOver == null) g2d_onMouseOver = new Signal(GNodeMouseSignal);
 		return g2d_onMouseOver;
 	}
 	private var g2d_onMouseOut:Signal;
-	private function get_onMouseOut():Signal {
+	public function get_onMouseOut():Signal {
 		if (g2d_onMouseOut == null) g2d_onMouseOut = new Signal(GNodeMouseSignal);
 		return g2d_onMouseOut;
 	}
