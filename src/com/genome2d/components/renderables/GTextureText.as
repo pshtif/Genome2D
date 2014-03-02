@@ -192,10 +192,12 @@ class GTextureText extends GComponent implements IRenderable
 					child.transform.x -= g2d_width/2;
 					child.transform.y -= g2d_height/2;
 				}
+                break;
 			case GTextureTextAlignType.TOP_RIGHT:
 				for (var i:int = 0; i<node.numChildren; ++i) {
 					node.getChildAt(i).transform.x -= g2d_width;
 				}
+                break;
 		}
 	}
 	

@@ -256,12 +256,12 @@ public class GNode
 		return g2d_onMouseUp;
 	}
 	private var g2d_onMouseOver:Signal;
-	public function get_onMouseOver():Signal {
+	public function get onMouseOver():Signal {
 		if (g2d_onMouseOver == null) g2d_onMouseOver = new Signal(GNodeMouseSignal);
 		return g2d_onMouseOver;
 	}
 	private var g2d_onMouseOut:Signal;
-	public function get_onMouseOut():Signal {
+	public function get onMouseOut():Signal {
 		if (g2d_onMouseOut == null) g2d_onMouseOut = new Signal(GNodeMouseSignal);
 		return g2d_onMouseOut;
 	}
@@ -303,8 +303,10 @@ public class GNode
                 case GMouseSignalType.MOUSE_DOWN:
                     g2d_mouseDownNode = p_object;
                     if (g2d_onMouseDown != null) g2d_onMouseDown.dispatch(mouseSignal);
+                    break;
                 case GMouseSignalType.MOUSE_MOVE:
                     if (g2d_onMouseMove != null) g2d_onMouseMove.dispatch(mouseSignal);
+                    break;
                 case GMouseSignalType.MOUSE_UP:
                     if (g2d_mouseDownNode == p_object && g2d_onMouseClick != null) {
                         var mouseClickSignal:GNodeMouseSignal = new GNodeMouseSignal(GMouseSignalType.MOUSE_UP, this, p_object, p_localX, p_localY, p_contextSignal);
@@ -312,12 +314,15 @@ public class GNode
                     }
                     g2d_mouseDownNode = null;
                     if (g2d_onMouseUp != null) g2d_onMouseUp.dispatch(mouseSignal);
+                    break;
                 case GMouseSignalType.MOUSE_OVER:
                     g2d_mouseOverNode = p_object;
                     if (g2d_onMouseOver != null) g2d_onMouseOver.dispatch(mouseSignal);
+                    break;
                 case GMouseSignalType.MOUSE_OUT:
                     g2d_mouseOverNode = null;
                     if (g2d_onMouseOut != null) g2d_onMouseOut.dispatch(mouseSignal);
+                    break;
             }
 		}
 		
