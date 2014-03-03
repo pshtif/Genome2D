@@ -35,7 +35,7 @@ public class Genome2D
 		return g2d_instance;
 	}
 
-    public var enabled:Boolean = true;
+    public var autoUpdateAndRender:Boolean = true;
 
 
 
@@ -175,7 +175,7 @@ public class Genome2D
      *  Frame handler called each frame
      **/
 	private function g2d_frameHandler(p_deltaTime:Number):void {
-        if (enabled) {
+        if (autoUpdateAndRender) {
             g2d_currentFrameId++;
 		    update(p_deltaTime);
             render();
