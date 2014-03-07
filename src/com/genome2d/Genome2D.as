@@ -53,6 +53,11 @@ public class Genome2D
         return g2d_onFailed;
     }
 
+    private var g2d_onInvalidated:Signal;
+    public function get onInvalidated():Signal {
+        return g2d_onFailed;
+    }
+
     private var g2d_onUpdate:Signal;
     public function get onUpdate():Signal {
         return g2d_onUpdate;
@@ -110,38 +115,38 @@ public class Genome2D
      **/
 	public function Genome2D() {
 		if (!g2d_instantiable) new GError("Can't instantiate singleton directly");
-
 		g2d_instance = this;
 
-        g2d_renderMatrix = new Matrix();
-        g2d_renderMatrixIndex = 0;
-        g2d_renderMatrixArray = new Vector.<Matrix>();
-
-        // Initialize root
-		g2d_root = new GNode("root");
-
-        // Initialize camera controller array
-        g2d_cameras = new Vector.<GCameraController>();
-
         // Initialize signals
-		g2d_onInitialized = new Signal();
-		g2d_onFailed = new Signal();
-
+        g2d_onInitialized = new Signal();
+        g2d_onFailed = new Signal();
+        g2d_onInvalidated = new Signal();
         g2d_onUpdate = new Signal();
-		g2d_onPreRender = new Signal();
-		g2d_onPostRender = new Signal();
+        g2d_onPreRender = new Signal();
+        g2d_onPostRender = new Signal();
 	}
 
     /**
      *  Initialize context
      **/
 	public function init(p_config:GContextConfig):void {
-		if (g2d_context != null) g2d_context.dispose();
+        g2d_renderMatrix = new Matrix();
+        g2d_renderMatrixIndex = 0;
+        g2d_renderMatrixArray = new Vector.<Matrix>();
 
+        // Initialize root
+        if (g2d_root != null) g2d_root.dispose();
+        g2d_root = new GNode("root");
+
+        // Initialize camera controller array
+        g2d_cameras = new Vector.<GCameraController>();
+
+        if (g2d_context != null) g2d_context.dispose();
         g2d_contextConfig = p_config;
 		g2d_context = new p_config.contextClass(g2d_contextConfig);
 		g2d_context.onInitialized(g2d_contextInitializedHandler);
 		g2d_context.onFailed(g2d_contextFailedHandler);
+        g2d_context.onInvalidated(g2d_contextInvalidatedHandler);
 		g2d_context.init();
 	}
 
@@ -160,7 +165,7 @@ public class Genome2D
     /**
      *  Context failed to initialize handler
      **/
-	private function g2d_contextFailedHandler():void {
+	private function g2d_contextFailedHandler(p_error:String):void {
         if (g2d_contextConfig.fallbackContextClass != null) {
             g2d_context = new g2d_contextConfig.fallbackContextClass(g2d_contextConfig);
             g2d_context.onInitialized(g2d_contextInitializedHandler);
@@ -168,8 +173,12 @@ public class Genome2D
             g2d_context.init();
         }
 
-		onFailed.dispatch();
+		onFailed.dispatch(p_error);
 	}
+
+    private function g2d_contextInvalidatedHandler():void {
+        onInvalidated.dispatch();
+    }
 
     /**
      *  Frame handler called each frame
@@ -265,5 +274,20 @@ public class Genome2D
             }
 		}
 	}
+
+    public function dispose():void {
+        if (g2d_root != null) g2d_root.dispose();
+        g2d_root = null;
+
+        g2d_onInitialized.removeAll();
+        g2d_onFailed.removeAll();
+        g2d_onInvalidated.removeAll();
+        g2d_onPostRender.removeAll();
+        g2d_onPreRender.removeAll();
+        g2d_onUpdate.removeAll();
+
+        g2d_context.dispose();
+        g2d_context = null;
+    }
 }
 }

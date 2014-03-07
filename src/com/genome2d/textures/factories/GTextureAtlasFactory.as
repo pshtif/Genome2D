@@ -39,7 +39,7 @@ public class GTextureAtlasFactory
 	 * 	@param p_xml
 	 */	
 	static public function createFromBitmapDataAndXml(p_id:String, p_bitmapData:BitmapData, p_xml:XML, p_format:String = "bgra"):GTextureAtlas {
-        if (!GTextureUtils.isValidTextureSize(p_bitmapData.width) || !GTextureUtils.isValidTextureSize(p_bitmapData.height)) throw new GError();
+        if (!GTextureUtils.isValidTextureSize(p_bitmapData.width) || !GTextureUtils.isValidTextureSize(p_bitmapData.height)) throw new GError("Atlas bitmap needs to have power of 2 size.");
 		var textureAtlas:GTextureAtlas = new GTextureAtlas(g2d_context, p_id, GTextureSourceType.BITMAPDATA, p_bitmapData, p_bitmapData.rect, p_format, null);
 
         for (var i:int = 0; i<p_xml.children().length(); ++i) {
