@@ -14,7 +14,7 @@ import flash.geom.Rectangle;
  * ...
  * @author 
  */
-class GTextureText extends GComponent implements IRenderable
+public class GTextureText extends GComponent implements IRenderable
 {
     /**
      *  Blend mode used for rendering

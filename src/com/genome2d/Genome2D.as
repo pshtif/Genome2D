@@ -20,7 +20,7 @@ import org.osflash.signals.Signal;
 public class Genome2D
 {
     // Genome2D version
-	static public const VERSION:String = "1.0.237";
+	static public const VERSION:String = "1.0.246";
 
     // Singleton instance
 	static private var g2d_instance:Genome2D;
@@ -55,7 +55,7 @@ public class Genome2D
 
     private var g2d_onInvalidated:Signal;
     public function get onInvalidated():Signal {
-        return g2d_onFailed;
+        return g2d_onInvalidated;
     }
 
     private var g2d_onUpdate:Signal;
