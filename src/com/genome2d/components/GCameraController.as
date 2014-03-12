@@ -55,6 +55,9 @@ public class GCameraController extends GComponent
 	public var g2d_renderedNodesCount:int;
 
     private var g2d_contextCamera:GContextCamera;
+    public function get contextCamera():GContextCamera {
+        return g2d_contextCamera;
+    }
 
     public function setView(p_normalizedX:Number, p_normalizedY:Number, p_normalizedWidth:Number, p_normalizedHeight:Number):void {
         // TODO can't add to >1
