@@ -12,6 +12,8 @@ import com.genome2d.components.GComponent;
 import com.genome2d.components.GTransform;
 import com.genome2d.components.renderables.IRenderable;
 import com.genome2d.context.GContextCamera;
+import com.genome2d.context.GContextFeature;
+import com.genome2d.context.IContext;
 import com.genome2d.error.GError;
 import com.genome2d.geom.GMatrixUtils;
 import com.genome2d.physics.GBody;
@@ -29,6 +31,7 @@ public class GNode
 {
     static private var g2d_cachedArray:Vector.<GNode>;
     static private var g2d_cachedMatrix:Matrix;
+    static private var g2d_activeMasks:Vector.<GNode>;
 
     static private var g2d_core:Genome2D;
     public function get core():Genome2D {
@@ -47,6 +50,17 @@ public class GNode
 
 
     public var maskRect:Rectangle;
+    private var g2d_usedAsMask:int = 0;
+    private var g2d_mask:GNode;
+    public function get mask():GNode {
+        return g2d_mask;
+    }
+    public function set mask(p_value:GNode):void {
+        if (g2d_core.g2d_context.hasFeature(GContextFeature.STENCIL_MASKING)) new GError("Stencil masking feature not supported.");
+        if (g2d_mask != null) g2d_mask.g2d_usedAsMask--;
+        g2d_mask = p_value;
+        g2d_mask.g2d_usedAsMask++;
+    }
 	
 	/**
 	 * 	Abstract reference to user defined data, if you want keep some custom data binded to G2DNode instance use it.
@@ -61,6 +75,31 @@ public class GNode
 	public function isActive():Boolean {
         return g2d_active;
 	}
+
+    public function setActive(p_value:Boolean):void {
+        if (p_value != g2d_active) {
+            if (g2d_disposed) throw new GError();
+
+            g2d_active = p_value;
+            g2d_transform.setActive(g2d_active);
+
+            if (g2d_pool != null) {
+                if (p_value) g2d_pool.g2d_putToBack(this);
+                else g2d_pool.g2d_putToFront(this);
+            }
+
+            //if (g2d_body != null) g2d_body.setActive(g2d_active);
+
+            var i:int;
+            for (i=0; i<g2d_numComponents; ++i) {
+                g2d_components[i].setActive(p_value);
+            }
+
+            for (var i:int = 0; i<g2d_numChildren; ++i) {
+                g2d_children[i].setActive(p_value);
+            }
+        }
+    }
 
     /**
      *  internal node id
@@ -105,6 +144,7 @@ public class GNode
         // Create cached instances
         if (g2d_cachedMatrix == null)  {
             g2d_cachedMatrix = new Matrix();
+            g2d_activeMasks = new Vector.<GNode>();
         }
 
         g2d_transform = new GTransform(this);
@@ -114,21 +154,22 @@ public class GNode
 	 */
 	public function render(p_parentTransformUpdate:Boolean, p_parentColorUpdate:Boolean, p_camera:GContextCamera, p_renderAsMask:Boolean, p_useMatrix:Boolean):void {
 		if (g2d_active) {
+            var context:IContext = core.getContext();
             var previousMaskRect:Rectangle = null;
             var hasMask:Boolean = false;
             if (maskRect != null && maskRect != parent.maskRect) {
                 hasMask = true;
-                previousMaskRect = (core.getContext().getMaskRect() == null) ? null : core.getContext().getMaskRect().clone();
+                previousMaskRect = (context.getMaskRect() == null) ? null : context.getMaskRect().clone();
                 if (parent.maskRect!=null) {
                     var intersection:Rectangle = parent.maskRect.intersection(maskRect);
-                    core.getContext().setMaskRect(intersection);
+                    context.setMaskRect(intersection);
                 } else {
-                    core.getContext().setMaskRect(maskRect);
+                    context.setMaskRect(maskRect);
                 }
             }
 
-            var invalidateTransform:Boolean = p_parentTransformUpdate || transform.g2d_transformDirty;
-            var invalidateColor:Boolean = p_parentColorUpdate || transform.g2d_colorDirty;
+            var invalidateTransform:Boolean = p_parentTransformUpdate || g2d_transform.g2d_transformDirty;
+            var invalidateColor:Boolean = p_parentColorUpdate || g2d_transform.g2d_colorDirty;
 
             if (invalidateTransform || invalidateColor || (g2d_body != null && g2d_body.isDynamic())) {
                 transform.invalidate(p_parentTransformUpdate, p_parentColorUpdate);
@@ -137,6 +178,15 @@ public class GNode
             //if (g2d_body != null) g2d_body.update(p_deltaTime, invalidateTransform, invalidateColor);
 
             if (!g2d_active || !g2d_transform.visible || ((cameraGroup&p_camera.mask) == 0 && cameraGroup != 0)) return;
+
+            if (!p_renderAsMask) {
+                if (mask != null) {
+                    context.renderToStencil(g2d_activeMasks.length);
+                    mask.render(true, false, p_camera, true, false);
+                    g2d_activeMasks.push(mask);
+                    context.renderToColor(g2d_activeMasks.length);
+                }
+            }
 
             // Use matrix
             var useMatrix:Boolean = p_useMatrix || transform.g2d_useMatrix > 0;
@@ -161,7 +211,15 @@ public class GNode
             }
 
             if (hasMask) {
-                core.getContext().setMaskRect(previousMaskRect);
+                context.setMaskRect(previousMaskRect);
+            }
+
+            if (!p_renderAsMask) {
+                if (mask != null) {
+                    g2d_activeMasks.pop();
+                    if (g2d_activeMasks.length==0) context.clearStencil();
+                    context.renderToColor(g2d_activeMasks.length);
+                }
             }
 
             // Use matrix

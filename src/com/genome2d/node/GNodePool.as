@@ -44,7 +44,7 @@ public class GNodePool
 	/**
 	 *	@private
 	 */
-	public function putToFront(p_node:GNode):void {
+	public function g2d_putToFront(p_node:GNode):void {
 		if (p_node == g2d_first) return;
 		
 		if (p_node.g2d_poolNext != null) p_node.g2d_poolNext.g2d_poolPrevious = p_node.g2d_poolPrevious;
@@ -60,7 +60,7 @@ public class GNodePool
 	/**
 	 *  @private
 	 */	
-	public function putToBack(p_node:GNode):void {
+	public function g2d_putToBack(p_node:GNode):void {
 		if (p_node == g2d_last) return;
 		
 		if (p_node.g2d_poolNext != null) p_node.g2d_poolNext.g2d_poolPrevious = p_node.g2d_poolPrevious;
