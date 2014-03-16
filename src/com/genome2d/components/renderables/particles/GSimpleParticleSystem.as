@@ -12,7 +12,7 @@ import flash.geom.Rectangle;
  * ...
  * @author 
  */
-class GSimpleParticleSystem extends GComponent implements IRenderable
+public class GSimpleParticleSystem extends GComponent implements IRenderable
 {
     public var blendMode:int = 1;
 
@@ -240,7 +240,8 @@ class GSimpleParticleSystem extends GComponent implements IRenderable
 	}
 
 	override public function dispose():void {
-		// TODO
+        while (g2d_firstParticle) deactivateParticle(g2d_firstParticle);
+        node.core.onUpdate.remove(update);
 		
 		super.dispose();
 	}

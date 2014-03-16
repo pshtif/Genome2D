@@ -4,7 +4,7 @@ package com.genome2d.components.renderables.particles {
  * ...
  * @author 
  */
-class GSimpleParticle
+public class GSimpleParticle
 {
 	/**
 	 * 	@private

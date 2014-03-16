@@ -4,7 +4,7 @@ package com.genome2d.components.renderables {
  * ...
  * @author 
  */
-class GTextureTextAlignType
+public class GTextureTextAlignType
 {
 	static public const TOP_LEFT:int = 0;
 

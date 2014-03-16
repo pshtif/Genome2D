@@ -3,7 +3,7 @@ package com.genome2d.geom {
 import com.genome2d.geom.GVector2;
 import flash.geom.Rectangle;
 
-class GLine {
+public class GLine {
     public var start:GVector2;
     public var end:GVector2;
     public var normal:GVector2;

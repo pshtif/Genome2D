@@ -14,6 +14,7 @@ import com.genome2d.components.renderables.IRenderable;
 import com.genome2d.context.GContextCamera;
 import com.genome2d.context.GContextFeature;
 import com.genome2d.context.IContext;
+import com.genome2d.context.stats.GStats;
 import com.genome2d.error.GError;
 import com.genome2d.geom.GMatrixUtils;
 import com.genome2d.physics.GBody;
@@ -72,6 +73,7 @@ public class GNode
 	}
 
 	private var g2d_active:Boolean = true;
+
 	public function isActive():Boolean {
         return g2d_active;
 	}
@@ -84,8 +86,11 @@ public class GNode
             g2d_transform.setActive(g2d_active);
 
             if (g2d_pool != null) {
-                if (p_value) g2d_pool.g2d_putToBack(this);
-                else g2d_pool.g2d_putToFront(this);
+                if (p_value) {
+                    g2d_pool.g2d_putToBack(this);
+                } else {
+                    g2d_pool.g2d_putToFront(this);
+                }
             }
 
             //if (g2d_body != null) g2d_body.setActive(g2d_active);
@@ -95,8 +100,11 @@ public class GNode
                 g2d_components[i].setActive(p_value);
             }
 
-            for (var i:int = 0; i<g2d_numChildren; ++i) {
-                g2d_children[i].setActive(p_value);
+            var child:GNode = g2d_firstChild;
+            while (child != null) {
+                var next:GNode = child.g2d_nextNode;
+                child.setActive(p_value);
+                child = next;
             }
         }
     }
@@ -148,6 +156,7 @@ public class GNode
         }
 
         g2d_transform = new GTransform(this);
+        g2d_transform.g2d_lookupClass = GTransform;
 	}
 	/**
 	 * 	@private
@@ -157,11 +166,11 @@ public class GNode
             var context:IContext = core.getContext();
             var previousMaskRect:Rectangle = null;
             var hasMask:Boolean = false;
-            if (maskRect != null && maskRect != parent.maskRect) {
+            if (maskRect != null && maskRect != g2d_parent.maskRect) {
                 hasMask = true;
                 previousMaskRect = (context.getMaskRect() == null) ? null : context.getMaskRect().clone();
-                if (parent.maskRect!=null) {
-                    var intersection:Rectangle = parent.maskRect.intersection(maskRect);
+                if (g2d_parent.maskRect!=null) {
+                    var intersection:Rectangle = g2d_parent.maskRect.intersection(maskRect);
                     context.setMaskRect(intersection);
                 } else {
                     context.setMaskRect(maskRect);
@@ -172,7 +181,7 @@ public class GNode
             var invalidateColor:Boolean = p_parentColorUpdate || g2d_transform.g2d_colorDirty;
 
             if (invalidateTransform || invalidateColor || (g2d_body != null && g2d_body.isDynamic())) {
-                transform.invalidate(p_parentTransformUpdate, p_parentColorUpdate);
+                g2d_transform.invalidate(p_parentTransformUpdate, p_parentColorUpdate);
             }
 
             //if (g2d_body != null) g2d_body.update(p_deltaTime, invalidateTransform, invalidateColor);
@@ -189,7 +198,7 @@ public class GNode
             }
 
             // Use matrix
-            var useMatrix:Boolean = p_useMatrix || transform.g2d_useMatrix > 0;
+            var useMatrix:Boolean = p_useMatrix || g2d_transform.g2d_useMatrix > 0;
             if (useMatrix) {
                 if (core.g2d_renderMatrixArray.length<=core.g2d_renderMatrixIndex) core.g2d_renderMatrixArray[core.g2d_renderMatrixIndex] = new Matrix();
                 core.g2d_renderMatrixArray[core.g2d_renderMatrixIndex].copyFrom(core.g2d_renderMatrix);
@@ -201,13 +210,15 @@ public class GNode
                 g2d_renderable.render(p_camera, useMatrix);
             }
 
-            for (var i:int = 0; i<g2d_numChildren; ++i) {
-                var child:GNode = g2d_children[i];
+            var child:GNode = g2d_firstChild;
+            while (child != null) {
+                var next:GNode = child.g2d_nextNode;
                 if (child.postProcess != null) {
                     child.postProcess.render(invalidateTransform, invalidateColor, p_camera, child);
                 } else {
                     child.render(invalidateTransform, invalidateColor, p_camera, p_renderAsMask, useMatrix);
                 }
+                child = next;
             }
 
             if (hasMask) {
@@ -224,8 +235,8 @@ public class GNode
 
             // Use matrix
             if (useMatrix) {
-                core.g2d_renderMatrixIndex--;
-                core.g2d_renderMatrix.copyFrom(core.g2d_renderMatrixArray[core.g2d_renderMatrixIndex]);
+                g2d_core.g2d_renderMatrixIndex--;
+                g2d_core.g2d_renderMatrix.copyFrom(core.g2d_renderMatrixArray[g2d_core.g2d_renderMatrixIndex]);
             }
         }
 	}
@@ -278,8 +289,11 @@ public class GNode
 
         prototype.children = <children/>;
 
-        for (i = 0; i<g2d_children; ++i) {
-            prototype.children.appendChild(g2d_children[i].getPrototype());
+        var child:GNode = g2d_firstChild;
+        while (child != null) {
+            var next:GNode = child.g2d_nextNode;
+            prototype.children.appendChild(child.getPrototype());
+            child = next;
         }
 
         return prototype;
@@ -334,15 +348,17 @@ public class GNode
 	public function processContextMouseSignal(p_captured:Boolean, p_cameraX:Number, p_cameraY:Number, p_signal:GMouseSignal, p_camera:GContextCamera):Boolean {
 		if (!isActive() || !transform.visible || (p_camera != null && (cameraGroup&p_camera.mask) == 0 && cameraGroup != 0)) return false;
 
-        var i:int;
-		if (mouseChildren) {
-			for (i = g2d_numChildren-1; i>=0; --i) {
-				p_captured = g2d_children[i].processContextMouseSignal(p_captured, p_cameraX, p_cameraY, p_signal, p_camera) || p_captured;
-			}
-		}
+        if (mouseChildren) {
+            var child:GNode = g2d_lastChild;
+            while (child != null) {
+                var previous:GNode = child.g2d_previousNode;
+                p_captured = child.processContextMouseSignal(p_captured, p_cameraX, p_cameraY, p_signal, p_camera) || p_captured;
+                child = previous;
+            }
+        }
 		
 		if (mouseEnabled) {
-            for (i = 0; i<g2d_numComponents; ++i) {
+            for (var i:int = 0; i<g2d_numComponents; ++i) {
 				p_captured = g2d_components[i].processContextMouseSignal(p_captured, p_cameraX, p_cameraY, p_signal) || p_captured;
 			}
 		}
@@ -400,7 +416,6 @@ public class GNode
 	 * 	@param p_componentClass Component type that should be retrieved
 	 */
 	public function getComponent(p_componentLookupClass:Class):GComponent {
-        // TODO use Lambda
 		if (g2d_disposed) throw new GError();
         for (var i:int = 0; i<g2d_numComponents; ++i) {
             var component:GComponent = g2d_components[i];
@@ -436,13 +451,6 @@ public class GNode
             g2d_renderable = component as IRenderable;
         }
 
-		/*
-		if (Std.is(component, GBody)) {
-			g2d_body = cast component;
-			return component;
-		}
-		/**/
-
         if (g2d_components == null)g2d_components = new Vector.<GComponent>();
 		g2d_components.push(component);
 		g2d_numComponents++;
@@ -469,7 +477,11 @@ public class GNode
 	/****************************************************************************************************
 	 * 	CONTAINER CODE
 	 ****************************************************************************************************/
-	private var g2d_children:Vector.<GNode>;
+    private var g2d_firstChild:GNode;
+    private var g2d_lastChild:GNode;
+    private var g2d_nextNode:GNode;
+    private var g2d_previousNode:GNode;
+
     private var g2d_numChildren:int = 0;
     public function get numChildren():int {
         return g2d_numChildren;
@@ -492,63 +504,160 @@ public class GNode
 	 * 
 	 * 	@param p_child node that should be added
 	 */
-	public function addChild(p_child:GNode):void {
-		if (g2d_disposed) throw new GError();
-		if (p_child == this) throw new GError();
-		if (p_child.parent != null) p_child.parent.removeChild(p_child);
-
-		p_child.g2d_parent = this;
-
-        if (g2d_children == null) g2d_children = new Vector.<GNode>();
-		g2d_children.push(p_child);
-		g2d_numChildren++;
-        if (g2d_numChildren == 1 && transform.hasUniformRotation()) transform.g2d_useMatrix++;
-		
-		if (isOnStage()) p_child.g2d_addedToStage();
-	}
-
-    public function addChildAt(p_child:GNode, p_index:int):void {
-        if (g2d_disposed) throw new GError();
-        if (p_child == this) throw new GError();
-        if (p_child.parent != null) p_child.parent.removeChild(p_child);
+	public function addChild(p_child:GNode, p_before:GNode = null):void {
+        if (g2d_disposed) new GError("Node already disposed.");
+        if (p_child == this) new GError("Can't add child to itself.");
+        if (p_child.g2d_parent != null) p_child.g2d_parent.removeChild(p_child);
 
         p_child.g2d_parent = this;
 
-        if (g2d_children == null) g2d_children = new Vector.<GNode>();
-        g2d_children.splice(p_index, 0, p_child);
+        if (g2d_firstChild == null) {
+            g2d_firstChild = p_child;
+            g2d_lastChild = p_child;
+        } else {
+            if (p_before == null) {
+                g2d_lastChild.g2d_nextNode = p_child;
+                p_child.g2d_previousNode = g2d_lastChild;
+                g2d_lastChild = p_child;
+            } else {
+                if (p_before.g2d_poolPrevious == null) g2d_firstChild = p_child;
+                p_before.g2d_previousNode = p_child;
+                p_child.g2d_nextNode = p_before;
+            }
+        }
+
         g2d_numChildren++;
         if (g2d_numChildren == 1 && transform.hasUniformRotation()) transform.g2d_useMatrix++;
 
         if (isOnStage()) p_child.g2d_addedToStage();
+	}
+
+    public function addChildAt(p_child:GNode, p_index:int):void {
+        if (g2d_disposed) new GError("Node already disposed.");
+        if (p_child == this) new GError("Can't add child to itself.");
+        if (p_child.g2d_parent != null) p_child.g2d_parent.removeChild(p_child);
+
+        p_child.g2d_parent = this;
+
+        var i:int = 0;
+        var after:GNode = g2d_firstChild;
+        while (i<p_index && after != null) {
+            after = after.g2d_nextNode;
+            i++;
+        }
+        addChild(p_child, (after == null) ? null : after.g2d_nextNode);
     }
 	
 	public function getChildAt(p_index:int):GNode {
-        if (g2d_children == null) throw new GError();
-        if (p_index>=g2d_numChildren) throw new GError();
-		return g2d_children[p_index];
+        if (p_index>=g2d_numChildren) new GError("Index out of bounds.");
+        var child:GNode = g2d_firstChild;
+        for (var i:int = 0; i<p_index; ++i) {
+            child = child.g2d_nextNode;
+        }
+        return child;
 	}
 
     public function getChildIndex(p_child:GNode):int {
-        return g2d_children.indexOf(p_child);
+        if (p_child.g2d_parent != this) return -1;
+        var child:GNode = g2d_firstChild;
+        for (var i:int = 0; i<g2d_numChildren; ++i) {
+            if (child == p_child) return i;
+            child = child.g2d_nextNode;
+        }
+        return -1;
     }
 
     public function setChildIndex(p_child:GNode, p_index:int):void {
-        if (p_child.parent != this) throw new GError();
+        if (p_child.g2d_parent != this) new GError("Not a child of this node.");
+        if (p_index>=g2d_numChildren) new GError("Index out of bounds.");
 
-        g2d_children.splice(g2d_children.indexOf(p_child), 1);
-        g2d_children.splice(p_index, 0, p_child);
-    }
-
-    public function swapChildren(p_child1:GNode, p_child2:GNode):void {
-        if (p_child1.parent != this || p_child2.parent != this) throw new GError();
-        swapChildrenAt(g2d_children.indexOf(p_child1), g2d_children.indexOf(p_child2));
+        var index:int = 0;
+        var child:GNode = g2d_firstChild;
+        while (child!=null && index<p_index) {
+            child = child.g2d_nextNode;
+            index++;
+        }
+        if (index == p_index) {
+            p_child.g2d_nextNode.g2d_previousNode = p_child.g2d_previousNode;
+            p_child.g2d_previousNode.g2d_nextNode = p_child.g2d_nextNode;
+            if (child == null) {
+                p_child.g2d_previousNode = g2d_lastChild;
+                g2d_lastChild.g2d_nextNode = p_child;
+                g2d_lastChild = p_child;
+            } else {
+                p_child.g2d_previousNode = child.g2d_previousNode;
+                child.g2d_previousNode.g2d_nextNode = p_child;
+                p_child.g2d_nextNode = child;
+                child.g2d_previousNode = p_child;
+            }
+        }
     }
 
     public function swapChildrenAt(p_index1:int, p_index2:int):void {
-        var child1:GNode = getChildAt(p_index1);
-        var child2:GNode = getChildAt(p_index2);
-        g2d_children[p_index1] = child2;
-        g2d_children[p_index2] = child1;
+        swapChildren(getChildAt(p_index1), getChildAt(p_index2));
+    }
+
+    public function swapChildren(p_child1:GNode, p_child2:GNode):void {
+        if (p_child1.g2d_parent != this || p_child2.g2d_parent != this) return;
+
+        var temp:GNode = p_child1.g2d_nextNode;
+        if (p_child2.g2d_nextNode == p_child1) {
+            p_child1.g2d_nextNode = p_child2;
+        } else {
+            p_child1.g2d_nextNode = p_child2.g2d_nextNode;
+            if (p_child1.g2d_nextNode != null) p_child1.g2d_nextNode.g2d_previousNode = p_child1;
+        }
+        if (temp == p_child2) {
+            p_child2.g2d_nextNode = p_child1;
+        } else {
+            p_child2.g2d_nextNode = temp;
+            if (p_child2.g2d_nextNode != null)  p_child2.g2d_nextNode.g2d_previousNode = p_child2;
+        }
+
+        temp = p_child1.g2d_previousNode;
+        if (p_child2.g2d_previousNode == p_child1) {
+            p_child1.g2d_previousNode = p_child2;
+        } else {
+            p_child1.g2d_previousNode = p_child2.g2d_previousNode;
+            if (p_child1.g2d_previousNode != null)  p_child1.g2d_previousNode.g2d_nextNode = p_child1;
+        }
+        if (temp == p_child2) {
+            p_child2.g2d_previousNode = p_child1;
+        } else {
+            p_child2.g2d_previousNode = temp;
+            if (p_child2.g2d_previousNode != null) p_child2.g2d_previousNode.g2d_nextNode = p_child2;
+        }
+
+        if (p_child1 == g2d_firstChild) g2d_firstChild = p_child2;
+        else if (p_child2 == g2d_firstChild) g2d_firstChild = p_child1;
+        if (p_child1 == g2d_lastChild) g2d_lastChild = p_child2;
+        else if (p_child2 == g2d_lastChild) g2d_lastChild = p_child1;
+    }
+
+    public function putChildToFront(p_child:GNode):void {
+        if (p_child.parent != this || p_child == g2d_lastChild) return;
+
+        if (p_child.g2d_nextNode != null) p_child.g2d_nextNode.g2d_previousNode = p_child.g2d_previousNode;
+        if (p_child.g2d_previousNode != null) p_child.g2d_previousNode.g2d_nextNode = p_child.g2d_nextNode;
+        if (p_child == g2d_firstChild) g2d_firstChild = g2d_firstChild.g2d_nextNode;
+
+        if (g2d_lastChild != null) g2d_lastChild.g2d_nextNode = p_child;
+        p_child.g2d_previousNode = g2d_lastChild;
+        p_child.g2d_nextNode = null;
+        g2d_lastChild = p_child;
+    }
+
+    public function putChildToBack(p_child:GNode):void {
+        if (p_child.parent != this || p_child == g2d_firstChild) return;
+
+        if (p_child.g2d_nextNode != null) p_child.g2d_nextNode.g2d_previousNode = p_child.g2d_previousNode;
+        if (p_child.g2d_previousNode != null) p_child.g2d_previousNode.g2d_nextNode = p_child.g2d_nextNode;
+        if (p_child == g2d_lastChild) g2d_lastChild = g2d_lastChild.g2d_previousNode;
+
+        if (g2d_firstChild != null) g2d_firstChild.g2d_previousNode = p_child;
+        p_child.g2d_previousNode = null;
+        p_child.g2d_nextNode = g2d_firstChild;
+        g2d_firstChild = p_child;
     }
 
 	/**
@@ -557,52 +666,74 @@ public class GNode
 	 * 	@param p_child node that should be removed
 	 */
 	public function removeChild(p_child:GNode):void {
-		if (g2d_disposed) throw new GError();
-		if (p_child.parent != this) return;
+        if (g2d_disposed) new GError("Node already disposed.");
+        if (p_child.g2d_parent != this) return;
 
-        g2d_children.splice(g2d_children.indexOf(p_child), 1);
-		
-		p_child.g2d_parent = null;
-		
-		g2d_numChildren--;
+        if (p_child.g2d_previousNode != null) {
+            p_child.g2d_previousNode.g2d_nextNode = p_child.g2d_nextNode;
+        } else {
+            g2d_firstChild = g2d_firstChild.g2d_nextNode;
+        }
+        if (p_child.g2d_nextNode != null) {
+            p_child.g2d_nextNode.g2d_previousNode = p_child.g2d_previousNode;
+        } else {
+            g2d_lastChild = g2d_lastChild.g2d_previousNode;
+        }
+
+        p_child.g2d_nextNode = p_child.g2d_previousNode = p_child.g2d_parent = null;
+
+        g2d_numChildren--;
         if (g2d_numChildren == 0 && transform.hasUniformRotation()) transform.g2d_useMatrix--;
 
-		if (isOnStage()) p_child.g2d_removedFromStage();
+        if (isOnStage()) p_child.g2d_removedFromStage();
 	}
 	
 	public function removeChildAt(p_index:int):void {
-		if (g2d_children == null || (p_index > 0 && p_index < g2d_children.length)) return;
-		removeChild(g2d_children[p_index]);
+        if (p_index>=g2d_numChildren) new GError("Index out of bounds.");
+        var index:int = 0;
+        var child:GNode = g2d_firstChild;
+        while (child != null && index<p_index) {
+            child = child.g2d_nextNode;
+            index++;
+        }
+        removeChild(child);
 	}
 
     /**
 	 * 	This method will call dispose on all children of this node which will remove them
 	 */
     public function disposeChildren():void {
-        while (g2d_numChildren>0) {
-            g2d_children.pop().dispose();
-            g2d_numChildren--;
+        while (g2d_firstChild != null) {
+            g2d_firstChild.dispose();
         }
     }
 
 	private function g2d_addedToStage():void {
 		if (g2d_onAddedToStage != null) g2d_onAddedToStage.dispatch();
-		
-		//if (g2d_body != null) g2d_body.addToSpace();
+        GStats.nodeCount++;
 
-		for (var i:int = 0; i<g2d_numChildren; ++i) {
-			g2d_children[i].g2d_addedToStage();
-		}
+        //if (g2d_body != null) g2d_body.addToSpace();
+
+        var child:GNode = g2d_firstChild;
+        while (child != null) {
+            var next:GNode = child.g2d_nextNode;
+            child.g2d_addedToStage();
+            child = next;
+        }
 	}
 
 	private function g2d_removedFromStage():void {
 		if (g2d_onRemovedFromStage != null) g2d_onRemovedFromStage.dispatch();
-		
-		//if (g2d_body != null) g2d_body.removeFromSpace();
-		
-		for (var i:int = 0; i<g2d_numChildren; ++i) {
-			g2d_children[i].g2d_removedFromStage();
-		}
+        GStats.nodeCount--;
+
+        //if (g2d_body != null) g2d_body.removeFromSpace();
+
+        var child:GNode = g2d_firstChild;
+        while (child != null) {
+            var next:GNode = child.g2d_nextNode;
+            child.g2d_removedFromStage();
+            child = next;
+        }
 	}
 	
 	/**
@@ -648,14 +779,17 @@ public class GNode
             }
         }
 
-        for (var i:int = 0; i<g2d_numChildren; ++i) {
-            g2d_children[i].getBounds(p_targetSpace, aabb);
+        var child:GNode = g2d_firstChild;
+        while (child != null) {
+            var next:GNode = child.g2d_nextNode;
+            child.getBounds(p_targetSpace, aabb);
             if (aabb.width == 0 || aabb.height == 0) continue;
             if (minX > aabb.x) minX = aabb.x;
             if (maxX < aabb.right) maxX = aabb.right;
             if (minY > aabb.y) minY = aabb.y;
             if (maxY < aabb.bottom) maxY = aabb.bottom;
             found = true;
+            child = next;
         }
 
         if (found) p_bounds.setTo(minX, minY, maxX-minX, maxY-minY);
@@ -683,21 +817,87 @@ public class GNode
         return current;
     }
 
-    private var g2d_cachedSortProperty:String;
-    public function sortChildrenOnUserData(p_property:String):void {
-        g2d_cachedSortProperty = p_property;
-        g2d_children.sort(sortOnUserData);
-    }
+    public function sortChildrenOnUserData(p_property:String, p_ascending:Boolean = true):void {
+        if (g2d_firstChild == null) return;
 
-    private function sortOnUserData(p_x:GNode, p_y:GNode):int {
-        var x:Number = p_x.userData.get(g2d_cachedSortProperty);
-        var y:Number = p_y.userData.get(g2d_cachedSortProperty);
-        if (x>y) {
-            return 1;
-        } else if (x<y) {
-            return -1;
+        var insize:int = 1;
+        var psize:int;
+        var qsize:int;
+        var nmerges:int;
+        var p:GNode;
+        var q:GNode;
+        var e:GNode;
+
+        while (true) {
+            p = g2d_firstChild;
+            g2d_firstChild = null;
+            g2d_lastChild = null;
+
+            nmerges = 0;
+
+            while (p != null) {
+                nmerges++;
+                q = p;
+                psize = 0;
+                for (var i:int = 0; i<insize; ++i) {
+                    psize++;
+                    q = q.g2d_nextNode;
+                    if (q == null) break;
+                }
+
+                qsize = insize;
+
+                while (psize > 0 || (qsize > 0 && q != null)) {
+                    if (psize == 0) {
+                        e = q;
+                        q = q.g2d_nextNode;
+                        qsize--;
+                    } else if (qsize == 0 || q == null) {
+                        e = p;
+                        p = p.g2d_nextNode;
+                        psize--;
+                    } else if (p_ascending) {
+                        if (p.userData[p_property] >= q.userData[p_property]) {
+                            e = p;
+                            p = p.g2d_nextNode;
+                            psize--;
+                        } else {
+                            e = q;
+                            q = q.g2d_nextNode;
+                            qsize--;
+                        }
+                    } else {
+                        if (p.userData[p_property] <= q.userData[p_property]) {
+                            e = p;
+                            p = p.g2d_nextNode;
+                            psize--;
+                        } else {
+                            e = q;
+                            q = q.g2d_nextNode;
+                            qsize--;
+                        }
+                    }
+
+                    if (g2d_lastChild != null) {
+                        g2d_lastChild.g2d_nextNode = e;
+                    } else {
+                        g2d_firstChild = e;
+                    }
+
+                    e.g2d_previousNode = g2d_lastChild;
+
+                    g2d_lastChild = e;
+                }
+
+                p = q;
+            }
+
+            g2d_lastChild.g2d_nextNode = null;
+
+            if (nmerges <= 1) return;
+
+            insize *= 2;
         }
-        return 0;
     }
 
     public function toString():String {
