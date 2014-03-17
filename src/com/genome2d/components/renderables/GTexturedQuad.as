@@ -64,22 +64,11 @@ public class GTexturedQuad extends GComponent implements IRenderable
 		}
 	}
 
-    /**
-     *  @private
-     **/
-	override public function processContextMouseSignal(p_captured:Boolean, p_cameraX:Number, p_cameraY:Number, p_contextSignal:GMouseSignal):Boolean {
-		if (p_captured && p_contextSignal.type == GMouseSignalType.MOUSE_UP) node.g2d_mouseDownNode = null;
+    public function hitTestPoint(p_x:Number, p_y:Number, p_pixelEnabled:Boolean = false):Boolean {
+        var tx:Number = p_x - node.transform.g2d_worldX;
+        var ty:Number = p_y - node.transform.g2d_worldY;
 
-		if (p_captured || texture == null || texture.width == 0 || texture.height == 0 || node.transform.g2d_worldScaleX == 0 || node.transform.g2d_worldScaleY == 0) {
-			if (node.g2d_mouseOverNode == node) node.dispatchNodeMouseSignal(GMouseSignalType.MOUSE_OUT, node, 0, 0, p_contextSignal);
-			return false;
-		}
-
-        // Invert translations
-        var tx:Number = p_cameraX - node.transform.g2d_worldX;
-        var ty:Number = p_cameraY - node.transform.g2d_worldY;
-
-        if (node.transform.g2d_worldRotation != 0) {
+        if (g2d_node.transform.g2d_worldRotation != 0) {
             var cos:Number = Math.cos(-node.transform.g2d_worldRotation);
             var sin:Number = Math.sin(-node.transform.g2d_worldRotation);
 
@@ -88,29 +77,69 @@ public class GTexturedQuad extends GComponent implements IRenderable
             ty = (ty*cos + ox*sin);
         }
 
-        tx /= node.transform.g2d_worldScaleX*texture.width;
-        ty /= node.transform.g2d_worldScaleY*texture.height;
+        tx /= g2d_node.transform.g2d_worldScaleX*texture.width;
+        ty /= g2d_node.transform.g2d_worldScaleY*texture.height;
+
+        tx += .5;
+        ty += .5;
+
+        if (tx >= -texture.pivotX / texture.width && tx <= 1 - texture.pivotX / texture.width && ty >= -texture.pivotY / texture.height && ty <= 1 - texture.pivotY / texture.height) {
+            if (p_pixelEnabled && texture.getAlphaAtUV(tx+texture.pivotX/texture.width, ty+texture.pivotY/texture.height) <= mousePixelTreshold) {
+                return false;
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     *  @private
+     **/
+	override public function processContextMouseSignal(p_captured:Boolean, p_cameraX:Number, p_cameraY:Number, p_contextSignal:GMouseSignal):Boolean {
+		if (p_captured && p_contextSignal.type == GMouseSignalType.MOUSE_UP) g2d_node.g2d_mouseDownNode = null;
+
+		if (p_captured || texture == null || texture.width == 0 || texture.height == 0 || g2d_node.transform.g2d_worldScaleX == 0 || g2d_node.transform.g2d_worldScaleY == 0) {
+			if (g2d_node.g2d_mouseOverNode == g2d_node) g2d_node.dispatchNodeMouseSignal(GMouseSignalType.MOUSE_OUT, g2d_node, 0, 0, p_contextSignal);
+			return false;
+		}
+
+        // Invert translations
+        var tx:Number = p_cameraX - g2d_node.transform.g2d_worldX;
+        var ty:Number = p_cameraY - g2d_node.transform.g2d_worldY;
+
+        if (g2d_node.transform.g2d_worldRotation != 0) {
+            var cos:Number = Math.cos(-g2d_node.transform.g2d_worldRotation);
+            var sin:Number = Math.sin(-g2d_node.transform.g2d_worldRotation);
+
+            var ox:Number = tx;
+            tx = (tx*cos - ty*sin);
+            ty = (ty*cos + ox*sin);
+        }
+
+        tx /= g2d_node.transform.g2d_worldScaleX*texture.width;
+        ty /= g2d_node.transform.g2d_worldScaleY*texture.height;
 
         tx += .5;
         ty += .5;
 
 		if (tx >= -texture.pivotX / texture.width && tx <= 1 - texture.pivotX / texture.width && ty >= -texture.pivotY / texture.height && ty <= 1 - texture.pivotY / texture.height) {
 			if (mousePixelEnabled && texture.getAlphaAtUV(tx+texture.pivotX/texture.width, ty+texture.pivotY/texture.height) <= mousePixelTreshold) {
-				if (node.g2d_mouseOverNode == node) {
-					node.dispatchNodeMouseSignal(GMouseSignalType.MOUSE_OUT, node, tx*texture.width+texture.pivotX, ty*texture.height+texture.pivotY, p_contextSignal);
+				if (g2d_node.g2d_mouseOverNode == node) {
+					g2d_node.dispatchNodeMouseSignal(GMouseSignalType.MOUSE_OUT, g2d_node, tx*texture.width+texture.pivotX, ty*texture.height+texture.pivotY, p_contextSignal);
 				}
 				return false;
 			}
 
-			node.dispatchNodeMouseSignal(p_contextSignal.type, node, tx*texture.width+texture.pivotX, ty*texture.height+texture.pivotY, p_contextSignal);
-			if (node.g2d_mouseOverNode != node) {
-				node.dispatchNodeMouseSignal(GMouseSignalType.MOUSE_OVER, node, tx*texture.width+texture.pivotX, ty*texture.height+texture.pivotY, p_contextSignal);
+			g2d_node.dispatchNodeMouseSignal(p_contextSignal.type, g2d_node, tx*texture.width+texture.pivotX, ty*texture.height+texture.pivotY, p_contextSignal);
+			if (g2d_node.g2d_mouseOverNode != g2d_node) {
+				g2d_node.dispatchNodeMouseSignal(GMouseSignalType.MOUSE_OVER, g2d_node, tx*texture.width+texture.pivotX, ty*texture.height+texture.pivotY, p_contextSignal);
 			}
 			
 			return true;
 		} else {
-			if (node.g2d_mouseOverNode == node) {
-				node.dispatchNodeMouseSignal(GMouseSignalType.MOUSE_OUT, node, tx*texture.width+texture.pivotX, ty*texture.height+texture.pivotY, p_contextSignal);
+			if (g2d_node.g2d_mouseOverNode == g2d_node) {
+				g2d_node.dispatchNodeMouseSignal(GMouseSignalType.MOUSE_OUT, g2d_node, tx*texture.width+texture.pivotX, ty*texture.height+texture.pivotY, p_contextSignal);
 			}
 		}
 		
