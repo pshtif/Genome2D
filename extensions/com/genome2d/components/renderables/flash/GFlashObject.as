@@ -62,7 +62,7 @@ public class GFlashObject extends GTexturedQuad
 		}
 
         private function updateHandler(p_deltaTime:Number):void {
-            if (nativeObject != null && updateFrameRate != 0) {
+            if (nativeObject != null && (updateFrameRate != 0 || g2d_invalidate)) {
                 invalidateTexture(false);
 
                 g2d_accumulatedTime += p_deltaTime;
