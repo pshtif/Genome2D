@@ -520,9 +520,14 @@ public class GNode
                 p_child.g2d_previousNode = g2d_lastChild;
                 g2d_lastChild = p_child;
             } else {
-                if (p_before.g2d_poolPrevious == null) g2d_firstChild = p_child;
-                p_before.g2d_previousNode = p_child;
+                if (p_before != g2d_firstChild) {
+                    p_before.g2d_previousNode.g2d_nextNode = p_child;
+                } else {
+                    g2d_firstChild = p_child;
+                }
+                p_child.g2d_previousNode = p_before.g2d_previousNode;
                 p_child.g2d_nextNode = p_before;
+                p_before.g2d_previousNode = p_child;
             }
         }
 
@@ -577,19 +582,27 @@ public class GNode
             child = child.g2d_nextNode;
             index++;
         }
-        if (index == p_index) {
-            p_child.g2d_nextNode.g2d_previousNode = p_child.g2d_previousNode;
-            p_child.g2d_previousNode.g2d_nextNode = p_child.g2d_nextNode;
-            if (child == null) {
-                p_child.g2d_previousNode = g2d_lastChild;
-                g2d_lastChild.g2d_nextNode = p_child;
-                g2d_lastChild = p_child;
+        if (index == p_index && child != p_child) {
+            // Remove child from current index
+            if (p_child != g2d_lastChild) {
+                p_child.g2d_nextNode.g2d_previousNode = p_child.g2d_previousNode;
             } else {
-                p_child.g2d_previousNode = child.g2d_previousNode;
-                child.g2d_previousNode.g2d_nextNode = p_child;
-                p_child.g2d_nextNode = child;
-                child.g2d_previousNode = p_child;
+                g2d_lastChild = p_child.g2d_previousNode;
             }
+            if (p_child != g2d_firstChild) {
+                p_child.g2d_previousNode.g2d_nextNode = p_child.g2d_nextNode;
+            } else {
+                g2d_firstChild = p_child.g2d_nextNode;
+            }
+            // Insert it before the found one
+            if (child != g2d_firstChild) {
+                child.g2d_previousNode.g2d_nextNode = p_child;
+            } else {
+                g2d_firstChild = p_child;
+            }
+            p_child.g2d_previousNode = child.g2d_previousNode;
+            p_child.g2d_nextNode = child;
+            child.g2d_previousNode = p_child;
         }
     }
 

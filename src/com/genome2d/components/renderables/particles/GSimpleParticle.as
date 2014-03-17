@@ -129,11 +129,13 @@ public class GSimpleParticle
 		var vY:Number = particleVelocityY = 0;
 		var aX:Number = particleAccelerationX = a;
 		var aY:Number = particleAccelerationY = 0;
-		
+
+        var sin:Number;
+        var cos:Number;
 		var rot:Number = p_emitter.node.transform.g2d_worldRotation;
 		if (rot!=0) {
-			var sin:Number = Math.sin(rot);
-			var cos:Number = Math.cos(rot);
+			sin = Math.sin(rot);
+			cos = Math.cos(rot);
 			
 			vX = particleVelocityX = v*cos;
 			vY = particleVelocityY = v*sin;
@@ -144,8 +146,8 @@ public class GSimpleParticle
 		if (p_emitter.dispersionAngle!=0 || p_emitter.dispersionAngleVariance!=0) {
 			var rangle:Number = p_emitter.dispersionAngle;
 			if (p_emitter.dispersionAngleVariance>0) rangle += p_emitter.dispersionAngleVariance * Math.random();
-			var sin:Number = Math.sin(rangle);
-			var cos:Number = Math.cos(rangle);
+			sin = Math.sin(rangle);
+			cos = Math.cos(rangle);
 			
 			particleVelocityX = (vX*cos - vY*sin);
 			particleVelocityY = (vY*cos + vX*sin);
