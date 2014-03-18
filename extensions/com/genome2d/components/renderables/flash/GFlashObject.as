@@ -10,6 +10,7 @@ package com.genome2d.components.renderables.flash
 import com.genome2d.components.renderables.GTexturedQuad;
 import com.genome2d.context.GBlendMode;
 import com.genome2d.node.GNode;
+import com.genome2d.textures.GTextureUtils;
 import com.genome2d.textures.factories.GTextureFactory;
 
 import flash.display.BitmapData;
@@ -91,10 +92,12 @@ public class GFlashObject extends GTexturedQuad
 
 			var bitmapData:BitmapData = new BitmapData(g2d_lastNativeWidth, g2d_lastNativeHeight, _bTransparent, 0x0);
 
-			if (texture == null) {
+			if (texture == null || texture.gpuWidth != GTextureUtils.getNextValidTextureSize(g2d_lastNativeWidth) || texture.gpuHeight != GTextureUtils.getNearestValidTextureSize(g2d_lastNativeHeight)) {
+                if(texture != null) texture.dispose();
 				texture = GTextureFactory.createFromBitmapData(g2d_textureId, bitmapData);
 			} else {
 				texture.g2d_bitmapData = bitmapData;
+                texture.setRegion(bitmapData.rect);
 			}
 
 			g2d_invalidate = true;
