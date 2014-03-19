@@ -24,8 +24,14 @@ public class GFlashObject extends GTexturedQuad
 		
 		public var nativeObject:DisplayObject;
 
-        public var forceMod2:Boolean = false;
-
+        private var g2d_forceMod2:Boolean = false;
+        public function get forceMod2():Boolean {
+            return g2d_forceMod2;
+        }
+        public function set forceMod2(p_value:Boolean):void {
+            g2d_forceMod2 = p_value;
+            g2d_invalidate = true;
+        }
 
         private var g2d_align:int = GFlashObjectAlign.CENTER;
         public function get align():int {
