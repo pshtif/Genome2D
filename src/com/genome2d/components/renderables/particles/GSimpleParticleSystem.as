@@ -96,6 +96,8 @@ public class GSimpleParticleSystem extends GComponent implements IRenderable
 
 	public var special:Boolean = false;
 
+    public var useWorldSpace:Boolean = true;
+
 	private var g2d_accumulatedTime:Number = 0;
 	private var g2d_accumulatedEmission:Number = 0;
 
@@ -116,18 +118,9 @@ public class GSimpleParticleSystem extends GComponent implements IRenderable
 	}
 
 	private function setInitialParticlePosition(p_particle:GSimpleParticle):void {
-		/*
-		if (useWorldSpace) {
-			p_particleNode.cTransform.x = cNode.cTransform.nWorldX + Math.random() * dispersionXVariance - dispersionXVariance * .5;
-			p_particleNode.cTransform.y = cNode.cTransform.nWorldY + Math.random() * dispersionYVariance-  dispersionYVariance * .5;
-		} else {
-			p_particleNode.cTransform.x = Math.random() * dispersionXVariance - dispersionXVariance * .5;
-			p_particleNode.cTransform.y = Math.random() * dispersionYVariance - dispersionYVariance * .5;
-		}
-		/**/
-		p_particle.g2d_x = node.transform.g2d_worldX;
+		p_particle.g2d_x = (useWorldSpace) ? node.transform.g2d_worldX : 0;
 		if (dispersionXVariance>0) p_particle.g2d_x += dispersionXVariance*Math.random() - dispersionXVariance*.5; 
-		p_particle.g2d_y = node.transform.g2d_worldY;
+		p_particle.g2d_y = (useWorldSpace) ? node.transform.g2d_worldY : 0;
 		if (dispersionYVariance>0) p_particle.g2d_y += dispersionYVariance*Math.random() - dispersionYVariance*.5; 
 		p_particle.g2d_rotation = initialAngle;
 		if (initialAngleVariance>0) p_particle.g2d_rotation += initialAngleVariance*Math.random();
@@ -217,8 +210,15 @@ public class GSimpleParticleSystem extends GComponent implements IRenderable
 		while (particle != null) {
 			var next:GSimpleParticle = particle.g2d_next;
 
-			var tx:Number = node.transform.g2d_worldX + (particle.g2d_x - node.transform.g2d_worldX) * 1;
-			var ty:Number = node.transform.g2d_worldY + (particle.g2d_y - node.transform.g2d_worldY) * 1;
+            var tx:Number;
+            var ty:Number;
+            if (useWorldSpace) {
+                tx = particle.g2d_x;
+                tx = particle.g2d_y;
+            } else {
+                tx = node.transform.g2d_worldX + particle.g2d_x;
+                ty = node.transform.g2d_worldY + particle.g2d_y;
+            }
 		
 			node.core.getContext().draw(texture, tx, ty, particle.g2d_scaleX*node.transform.g2d_worldScaleX, particle.g2d_scaleY*node.transform.g2d_worldScaleY, particle.g2d_rotation, particle.g2d_red, particle.g2d_green, particle.g2d_blue, particle.g2d_alpha, blendMode);
 
