@@ -23,6 +23,18 @@ public class GFlashObject extends GTexturedQuad
 		static public var defaultUpdateFrameRate:int = 20;
 		
 		public var nativeObject:DisplayObject;
+
+        public var forceMod2:Boolean = false;
+
+
+        private var g2d_align:int = GFlashObjectAlign.CENTER;
+        public function get align():int {
+            return g2d_align;
+        }
+        public function set align(p_value:int):void {
+            g2d_align = p_value;
+            invalidateAlign();
+        }
 		
 		private var g2d_nativeMatrix:Matrix;
 		
@@ -84,13 +96,18 @@ public class GFlashObject extends GTexturedQuad
         }
 
 		protected function invalidateTexture(p_force:Boolean):void {
-			if (nativeObject == null) return;
-			if (!p_force && g2d_lastNativeWidth == nativeObject.width && g2d_lastNativeHeight == nativeObject.height) return;
-			
-			g2d_lastNativeWidth = nativeObject.width;
-			g2d_lastNativeHeight = nativeObject.height;
+            if (nativeObject == null) return;
+            if (!p_force && g2d_lastNativeWidth == nativeObject.width && g2d_lastNativeHeight == nativeObject.height) return;
 
-			var bitmapData:BitmapData = new BitmapData(g2d_lastNativeWidth, g2d_lastNativeHeight, _bTransparent, 0x0);
+            g2d_lastNativeWidth = nativeObject.width;
+            g2d_lastNativeHeight = nativeObject.height;
+
+            var bitmapData:BitmapData;
+            if (forceMod2) {
+                bitmapData = new BitmapData((g2d_lastNativeWidth%2==0) ? g2d_lastNativeWidth : g2d_lastNativeWidth+1, (g2d_lastNativeHeight%2==0) ? g2d_lastNativeHeight : g2d_lastNativeHeight+1, _bTransparent, 0x0);
+            } else {
+                bitmapData = new BitmapData(g2d_lastNativeWidth, g2d_lastNativeHeight, _bTransparent, 0x0);
+            }
 
 			if (texture == null || texture.gpuWidth != GTextureUtils.getNextValidTextureSize(g2d_lastNativeWidth) || texture.gpuHeight != GTextureUtils.getNearestValidTextureSize(g2d_lastNativeHeight)) {
                 if(texture != null) texture.dispose();
@@ -100,8 +117,23 @@ public class GFlashObject extends GTexturedQuad
                 texture.setRegion(bitmapData.rect);
 			}
 
+            invalidateAlign();
+
 			g2d_invalidate = true;
 		}
+
+        protected function invalidateAlign():void {
+            switch (align) {
+                case GFlashObjectAlign.TOP_LEFT:
+                    texture.pivotX = -texture.width/2;
+                    texture.pivotY = -texture.height/2;
+                    break;
+                case GFlashObjectAlign.CENTER:
+                    texture.pivotX = 0;
+                    texture.pivotY = 0;
+                    break;
+            }
+        }
 		
 		override public function dispose():void {
 			texture.dispose();
