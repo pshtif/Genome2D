@@ -214,7 +214,7 @@ public class GSimpleParticleSystem extends GComponent implements IRenderable
             var ty:Number;
             if (useWorldSpace) {
                 tx = particle.g2d_x;
-                tx = particle.g2d_y;
+                ty = particle.g2d_y;
             } else {
                 tx = node.transform.g2d_worldX + particle.g2d_x;
                 ty = node.transform.g2d_worldY + particle.g2d_y;
