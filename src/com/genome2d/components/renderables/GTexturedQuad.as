@@ -126,20 +126,20 @@ public class GTexturedQuad extends GComponent implements IRenderable
 		if (tx >= -texture.pivotX / texture.width && tx <= 1 - texture.pivotX / texture.width && ty >= -texture.pivotY / texture.height && ty <= 1 - texture.pivotY / texture.height) {
 			if (mousePixelEnabled && texture.getAlphaAtUV(tx+texture.pivotX/texture.width, ty+texture.pivotY/texture.height) <= mousePixelTreshold) {
 				if (g2d_node.g2d_mouseOverNode == node) {
-					g2d_node.dispatchNodeMouseSignal(GMouseSignalType.MOUSE_OUT, g2d_node, tx*texture.width+texture.pivotX, ty*texture.height+texture.pivotY, p_contextSignal);
+					g2d_node.dispatchNodeMouseSignal(GMouseSignalType.MOUSE_OUT, g2d_node, tx*texture.width-texture.width*.5, ty*texture.height-texture.height*.5, p_contextSignal);
 				}
 				return false;
 			}
 
-			g2d_node.dispatchNodeMouseSignal(p_contextSignal.type, g2d_node, tx*texture.width+texture.pivotX, ty*texture.height+texture.pivotY, p_contextSignal);
+			g2d_node.dispatchNodeMouseSignal(p_contextSignal.type, g2d_node, tx*texture.width-texture.width*.5, ty*texture.height-texture.height*.5, p_contextSignal);
 			if (g2d_node.g2d_mouseOverNode != g2d_node) {
-				g2d_node.dispatchNodeMouseSignal(GMouseSignalType.MOUSE_OVER, g2d_node, tx*texture.width+texture.pivotX, ty*texture.height+texture.pivotY, p_contextSignal);
+				g2d_node.dispatchNodeMouseSignal(GMouseSignalType.MOUSE_OVER, g2d_node, tx*texture.width-texture.width*.5, ty*texture.height-texture.height*.5, p_contextSignal);
 			}
 			
 			return true;
 		} else {
 			if (g2d_node.g2d_mouseOverNode == g2d_node) {
-				g2d_node.dispatchNodeMouseSignal(GMouseSignalType.MOUSE_OUT, g2d_node, tx*texture.width+texture.pivotX, ty*texture.height+texture.pivotY, p_contextSignal);
+				g2d_node.dispatchNodeMouseSignal(GMouseSignalType.MOUSE_OUT, g2d_node, tx*texture.width-texture.width*.5, ty*texture.height-texture.height*.5, p_contextSignal);
 			}
 		}
 		
