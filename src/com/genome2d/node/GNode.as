@@ -765,10 +765,10 @@ public class GNode
     public function getBounds(p_targetSpace:GNode, p_bounds:Rectangle = null):Rectangle {
         if (p_bounds == null) p_bounds = new Rectangle();
         var found:Boolean = false;
-        var minX:Number = 10000000;
-        var maxX:Number = -10000000;
-        var minY:Number = 10000000;
-        var maxY:Number = -10000000;
+        var minX:Number = Infinity;
+        var maxX:Number = -Infinity;
+        var minY:Number = Infinity;
+        var maxY:Number = -Infinity;
         var aabb:Rectangle = new Rectangle(0,0,0,0);
 
         if (g2d_renderable != null) {
@@ -796,7 +796,10 @@ public class GNode
         while (child != null) {
             var next:GNode = child.g2d_nextNode;
             child.getBounds(p_targetSpace, aabb);
-            if (aabb.width == 0 || aabb.height == 0) continue;
+            if (aabb.width == 0 || aabb.height == 0) {
+                child = next;
+                continue;
+            }
             if (minX > aabb.x) minX = aabb.x;
             if (maxX < aabb.right) maxX = aabb.right;
             if (minY > aabb.y) minY = aabb.y;

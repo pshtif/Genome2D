@@ -20,7 +20,7 @@ import org.osflash.signals.Signal;
 public class Genome2D
 {
     // Genome2D version
-	static public const VERSION:String = "1.0.246";
+	static public const VERSION:String = "1.0.255";
 
     // Singleton instance
 	static private var g2d_instance:Genome2D;
