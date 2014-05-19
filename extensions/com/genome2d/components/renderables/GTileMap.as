@@ -2,7 +2,6 @@ package com.genome2d.components.renderables
 {
 import com.genome2d.components.GComponent;
 import com.genome2d.context.GContextCamera;
-import com.genome2d.context.GContextCamera;
 import com.genome2d.node.GNode;
 import com.genome2d.textures.GTexture;
 
@@ -53,8 +52,8 @@ public class GTileMap extends GComponent implements IRenderable
 			var mapHalfHeight:Number = g2d_tileHeight * g2d_height * (g2d_iso ? .25 : .5);
 			
 			// Position of top left visible tile from 0,0
-            var cameraWidth:Number = node.core.getContext().getStageViewRect().width*p_camera.normalizedViewWidth;
-            var cameraHeight:Number = node.core.getContext().getStageViewRect().height*p_camera.normalizedViewHeight;
+            var cameraWidth:Number = node.core.getContext().getStageViewRect().width*p_camera.normalizedViewWidth / p_camera.scaleX;
+            var cameraHeight:Number = node.core.getContext().getStageViewRect().height*p_camera.normalizedViewHeight / p_camera.scaleY;
 			var startX:Number =	p_camera.x - g2d_node.transform.g2d_worldX - cameraWidth *.5;
 			var startY:Number = p_camera.y - g2d_node.transform.g2d_worldY - cameraHeight *.5;
 			// Position of top left tile from map center
@@ -99,19 +98,19 @@ public class GTileMap extends GComponent implements IRenderable
             var cameraHeight:Number = node.core.getContext().getStageViewRect().height*p_camera.normalizedViewHeight;
 			p_x -= cameraX + cameraWidth*.5;
 			p_y -= cameraY + cameraHeight*.5;
+
+			var mapHalfWidth:Number = (g2d_tileWidth * p_camera.scaleX) * g2d_width * .5;
+			var mapHalfHeight:Number = (g2d_tileHeight * p_camera.scaleY) * g2d_height * (g2d_iso ? .25 : .5);
 			
-			var mapHalfWidth:Number = g2d_tileWidth * g2d_width * .5;
-			var mapHalfHeight:Number = g2d_tileHeight * g2d_height * (g2d_iso ? .25 : .5);
-			
-			var firstX:Number = -mapHalfWidth + (g2d_iso ? g2d_tileWidth/2 : 0);
-			var firstY:Number = -mapHalfHeight + (g2d_iso ? g2d_tileHeight/2 : 0);
+			var firstX:Number = -mapHalfWidth + (g2d_iso ? (g2d_tileWidth * p_camera.scaleX) / 2 : 0);
+			var firstY:Number = -mapHalfHeight + (g2d_iso ? (g2d_tileHeight * p_camera.scaleY) / 2 : 0);
 
 			var tx:Number = p_camera.x - g2d_node.transform.g2d_worldX + p_x;
 			var ty:Number = p_camera.y - g2d_node.transform.g2d_worldY + p_y;
 			
-			var indexX:int = Math.floor((tx - firstX) / g2d_tileWidth);
-			var indexY:int = Math.floor((ty - firstY) / g2d_tileHeight);
-			
+			var indexX:int = Math.floor((tx - firstX) / (g2d_tileWidth * p_camera.scaleX));
+			var indexY:int = Math.floor((ty - firstY) / (g2d_tileHeight * p_camera.scaleY));
+
 			if (indexX<0 || indexX>=g2d_width || indexY<0 || indexY>=g2d_height) return null;
 			return g2d_tiles[indexY*g2d_width+indexX];
 		}
