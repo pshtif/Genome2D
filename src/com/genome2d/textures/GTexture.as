@@ -42,8 +42,8 @@ public class GTexture extends GContextTexture
 		g2d_region = p_value;
 	}
 
-	public function GTexture(p_context:IContext, p_id:String, p_sourceType:int, p_source:*, p_region:Rectangle, p_format:String, p_pivotX:Number = 0, p_pivotY:Number = 0, p_parentAtlas:GTextureAtlas = null) {
-		super(p_context, p_id, p_sourceType, p_source, p_region, p_format, p_pivotX, p_pivotY);
+	public function GTexture(p_context:IContext, p_id:String, p_sourceType:int, p_source:*, p_region:Rectangle, p_format:String, p_repeatable:Boolean, p_pivotX:Number = 0, p_pivotY:Number = 0, p_parentAtlas:GTextureAtlas = null) {
+		super(p_context, p_id, p_sourceType, p_source, p_region, p_format, p_repeatable, p_pivotX, p_pivotY);
 		
 		g2d_parentAtlas = p_parentAtlas;
         g2d_type = (g2d_parentAtlas == null) ? GTextureType.STANDALONE : GTextureType.SUBTEXTURE;

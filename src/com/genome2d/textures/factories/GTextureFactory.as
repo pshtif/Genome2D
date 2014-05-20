@@ -13,14 +13,14 @@ import com.genome2d.textures.GTexture;
 public class GTextureFactory {
     static public var g2d_context:IContext;
 
-    static public function createFromEmbedded(p_id:String, p_asset:Class, p_format:String = "bgra"):GTexture {
+    static public function createFromEmbedded(p_id:String, p_asset:Class, p_format:String = "bgra", p_repeatable:Boolean = false):GTexture {
         var bitmap:Bitmap = new p_asset();
 
-        return new GTexture(g2d_context, p_id, GTextureSourceType.BITMAPDATA, bitmap.bitmapData, bitmap.bitmapData.rect, p_format);
+        return new GTexture(g2d_context, p_id, GTextureSourceType.BITMAPDATA, bitmap.bitmapData, bitmap.bitmapData.rect, p_format, p_repeatable);
     }
 
-	static public function createFromBitmapData(p_id:String, p_bitmapData:BitmapData, p_format:String = "bgra"):GTexture {
-		return new GTexture(g2d_context, p_id, GTextureSourceType.BITMAPDATA, p_bitmapData, p_bitmapData.rect, p_format);
+	static public function createFromBitmapData(p_id:String, p_bitmapData:BitmapData, p_format:String = "bgra", p_repeatable:Boolean = false):GTexture {
+		return new GTexture(g2d_context, p_id, GTextureSourceType.BITMAPDATA, p_bitmapData, p_bitmapData.rect, p_format, p_repeatable);
 	}
 
     static public function createFromATF(p_id:String, p_atfData:ByteArray, p_uploadCallback:Function = null):GTexture {
@@ -45,11 +45,11 @@ public class GTextureFactory {
         var width:Number = Math.pow(2, p_atfData[offset+1]);
         var height:Number = Math.pow(2, p_atfData[offset+2]);
 
-        return new GTexture(g2d_context, p_id, type, p_atfData, new Rectangle(0, 0, width, height), null, 0, 0, null);
+        return new GTexture(g2d_context, p_id, type, p_atfData, new Rectangle(0, 0, width, height), null, false, 0, 0, null);
     }
 
     static public function createRenderTexture(p_id:String, p_width:int, p_height:int):GTexture {
-        return new GTexture(g2d_context, p_id, GTextureSourceType.RENDER_TARGET, null, new Rectangle(0,0,p_width, p_height), null);
+        return new GTexture(g2d_context, p_id, GTextureSourceType.RENDER_TARGET, null, new Rectangle(0,0,p_width, p_height), null, false);
     }
 }
 }
