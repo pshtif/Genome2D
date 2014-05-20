@@ -24,7 +24,7 @@ public class GFlashObject extends GTexturedQuad
 		
 		public var nativeObject:DisplayObject;
 
-        private var g2d_forceMod2:Boolean = false;
+        private var g2d_forceMod2:Boolean = true;
         public function get forceMod2():Boolean {
             return g2d_forceMod2;
         }
@@ -101,7 +101,7 @@ public class GFlashObject extends GTexturedQuad
             }
         }
 
-		protected function invalidateTexture(p_force:Boolean):void {
+		public function invalidateTexture(p_force:Boolean):void {
             if (nativeObject == null) return;
             if (!p_force && g2d_lastNativeWidth == nativeObject.width && g2d_lastNativeHeight == nativeObject.height) return;
 
@@ -142,6 +142,7 @@ public class GFlashObject extends GTexturedQuad
         }
 		
 		override public function dispose():void {
+            node.core.onUpdate.remove(updateHandler);
 			texture.dispose();
 			
 			super.dispose();
