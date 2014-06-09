@@ -797,13 +797,8 @@ public class GNode
             var next:GNode = child.g2d_nextNode;
             child.getBounds(p_targetSpace, aabb);
             if (aabb.width == 0 || aabb.height == 0) {
-<<<<<<< HEAD
                 child = next;
                 continue;
-=======
-            	child = next;
-            	continue;
->>>>>>> b0e0d977b717b7e087b2c8ada45b053b79fc1b0d
             }
             if (minX > aabb.x) minX = aabb.x;
             if (maxX < aabb.right) maxX = aabb.right;
