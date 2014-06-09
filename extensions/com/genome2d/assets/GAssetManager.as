@@ -9,13 +9,13 @@ import org.osflash.signals.Signal;
 public class GAssetManager {
     protected var g2d_assetsQueue:Vector.<GAsset>;
     protected var g2d_loading:Boolean;
-    protected var g2d_assets:Object;
+    protected var g2d_assets:Dictionary;
 
     public var onLoaded:Signal;
 
     public function GAssetManager() {
         g2d_assetsQueue = new Vector.<GAsset>();
-        g2d_assets = new Vector.<GAsset>();
+        g2d_assets = new Dictionary();
 
         onLoaded = new Signal();
     }
