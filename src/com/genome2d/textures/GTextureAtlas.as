@@ -10,6 +10,8 @@ public class GTextureAtlas extends GContextTexture {
     }
 
     private var g2d_textures:Dictionary;
+    private var g2d_textureIdsVector : Vector.<String>;
+    
     public function getSubTexture(p_subId:String):GTexture {
         return g2d_textures[p_subId];
     }
@@ -19,6 +21,7 @@ public class GTextureAtlas extends GContextTexture {
 
         g2d_type = GTextureType.ATLAS;
         g2d_textures = new Dictionary(false);
+        g2d_textureIdsVector = new Vector.<String>();
     }
 
     override public function invalidateNativeTexture(p_reinitialize:Boolean):void {
@@ -37,24 +40,27 @@ public class GTextureAtlas extends GContextTexture {
         texture.nativeTexture = nativeTexture;
 
         g2d_textures[p_subId] = texture;
+        g2d_textureIdsVector.push(p_subId);
 
         return texture;
     }
 
     public function removeSubTexture(p_subId:String):void {
         g2d_textures[p_subId].dispose();
+        g2d_textureIdsVector.splice(g2d_textureIdsVector.indexOf(p_subId), 1);
         delete g2d_textures[p_subId];
     }
 
     private function g2d_disposeSubTextures():void {
-        for (var it:String in g2d_textures) {
-            var texture:GTexture = g2d_textures[it];
-            texture.dispose();
-
-            delete g2d_textures[it];
-        }
-
-        g2d_textures = new Dictionary();
+        var n : uint = g2d_textureIdsVector.length;
+	while(n--){
+	    var id:String = g2d_textureIdsVector[n];
+	    var texture : GTexture = g2d_textures[id];
+	    texture.dispose();
+	    delete g2d_textures[id];
+	}
+	g2d_textureIdsVector.length = 0;
+	g2d_textures = new Dictionary();
     }
 
     /**
@@ -64,6 +70,19 @@ public class GTextureAtlas extends GContextTexture {
         g2d_disposeSubTextures();
 
         super.dispose();
+    }
+    
+    public function getAllSubTextures() : Vector.<GTexture> {
+	var gTextures : Vector.<GTexture> = new Vector.<GTexture>();
+	var length : uint = g2d_textureIdsVector.length;
+        for(var i:uint = 0; i < length; i++){
+            gTextures.push(g2d_textures[g2d_textureIdsVector[i]]);
+        }
+        return  gTextures;
+    }
+	
+    public function getTextureNames() : Vector.<String> {
+        return g2d_textureIdsVector.concat();
     }
 }
 }
