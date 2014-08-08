@@ -13,11 +13,6 @@ permitted provided that the following conditions are met:
       of conditions and the following disclaimer in the documentation and/or other materials
       provided with the distribution.
 
-   3. Redistributions in binary form via an online application distribution system (like the 
-      Apple App Store) that inhibit execution of condition 2 must include a text equivalent
-      to the following in the description: “Powered by the Genome2D”. 
-      The content of the following disclaimer is still in effect.
-
 THIS SOFTWARE IS PROVIDED BY PETER STEFCEK ``AS IS'' AND ANY EXPRESS OR IMPLIED
 WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
 FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL PETER STEFCEK OR
