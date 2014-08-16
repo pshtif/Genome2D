@@ -8,7 +8,7 @@ Genome2D is a node/component based system where nodes are abstract entities defi
 
 Repositories structure
 ----------------------
-* __Genome2D-Core__ - THIS REPOSITORY
+* __Genome2D-Core__ - [REPOSITORY](https://github.com/pshtif/Genome2D-Core)
 
     Platform independent high level part of the Genome2D framework.
   
