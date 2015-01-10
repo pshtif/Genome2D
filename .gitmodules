@@ -1,0 +1,3 @@
+[submodule "Genome2D-Core"]
+	path = Genome2D-Core
+	url = https://github.com/pshtif/Genome2D-Core
