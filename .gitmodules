@@ -4,3 +4,6 @@
 [submodule "Genome2D-ContextFlash"]
 	path = Genome2D-ContextFlash
 	url = https://github.com/pshtif/Genome2D-ContextFlash
+[submodule "Genome2D-ContextCommon"]
+	path = Genome2D-ContextCommon
+	url = https://github.com/pshtif/Genome2D-ContextCommon
