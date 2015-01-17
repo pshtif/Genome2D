@@ -1,15 +1,2 @@
-# Examples JavaScript Target
-#examples/haxe/build/js.hxml
-
-# Examples Flash Target
-#examples/haxe/build/flash.hxml
-
 # Flash Complete Library
 Genome2D-Core/build/swc.hxml
-
-# Documentation Flash Target
-#core/build/documentation.hxml
-
-
-# Flash Test
-#test/build/test.hxml
