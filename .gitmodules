@@ -10,3 +10,6 @@
 [submodule "Genome2D-ContextHTML"]
 	path = Genome2D-ContextHTML
 	url = https://github.com/pshtif/Genome2D-ContextHTML
+[submodule "Genome2D-Examples"]
+	path = Genome2D-Examples
+	url = https://github.com/pshtif/Genome2D-Examples
