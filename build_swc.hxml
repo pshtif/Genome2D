@@ -4,7 +4,6 @@
 -cp Genome2D-ContextCommon/src
 
 # Include libraries
--lib msignal
 -swf-lib Genome2D-ContextFlash/lib/AGAL.swc
 
 # Haxe flags
