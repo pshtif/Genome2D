@@ -45,7 +45,7 @@
     <hidden path="obj" />
   </hiddenPaths>
   <!-- Executed before build -->
-  <preBuildCommand>$(CompilerPath)\haxe.exe $(ProjectDir)\build_examples.hxml</preBuildCommand>
+  <preBuildCommand>$(CompilerPath)\haxe.exe $(ProjectDir)\build.hxml</preBuildCommand>
   <!-- Executed after build -->
   <postBuildCommand alwaysRun="False" />
   <!-- Other project options -->
