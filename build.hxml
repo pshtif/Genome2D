@@ -1,0 +1,4 @@
+# Just global build file to avoid setting this inside various IDEs
+
+build_swc.hxml
+#build_examples.hxml
