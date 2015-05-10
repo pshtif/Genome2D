@@ -8,6 +8,7 @@
 
 # Haxe flags
 -dce no
+--macro include('com')
 
 # Genome2D flags
 -D genome_stage3donly
@@ -15,5 +16,4 @@
 
 # Flash Swc flags
 -swf-version 12
---macro include('com')
 -swf bin/Genome2D.swc
