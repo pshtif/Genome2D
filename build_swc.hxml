@@ -11,7 +11,7 @@
 --macro include('com')
 
 # Genome2D flags
--D genome_stage3donly
+#-D genome_stage3donly
 -D genome_debug
 
 # Flash Swc flags
