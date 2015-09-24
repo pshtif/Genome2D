@@ -2,7 +2,7 @@ Genome2D
 ========
 What is Genome2D?
 -----------------
-Genome2D is a multiplatform 2D GPU framework focused on game development. It is build using [Haxe](www.haxe.org) programming language which enables it to deploy to multiple targets. Currently Genome2D supports HTML target using WebGL with Canvas fallback and Flash/AIR target using Stage3D with Bitmap fallback which enables you to target almost mobile device out there (iOS, Android) as well as desktop (Windows, OSX) and last but not least browser through Flash plugin.
+Genome2D is a multiplatform 2D GPU framework focused on game development. It is build using [Haxe](www.haxe.org) programming language which enables it to deploy to multiple targets. Currently Genome2D supports HTML target using WebGL with Canvas fallback and Flash/AIR target using Stage3D with Bitmap fallback which enables you to target almost any mobile device out there (iOS, Android) as well as desktop (Windows, OSX) and last but not least browser through Flash plugin.
 
 Genome2D is a node/component based system where nodes are abstract entities defining the scene hierarchy and components which are then added to these entities define their functionality.
 
