@@ -5,13 +5,14 @@
 
 # Include libraries
 -swf-lib Genome2D-ContextFlash/lib/AGAL.swc
+-lib Actuate
 
 # Haxe flags
 -dce no
 --macro include('com')
 
 # Genome2D flags
-#-D genome_stage3donly
+-D genome_stage3donly
 -D genome_debug
 
 # Flash Swc flags
