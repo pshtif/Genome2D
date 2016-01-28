@@ -4,20 +4,18 @@
   <output>
     <movie outputType="CustomBuild" />
     <movie input="" />
-    <movie path="" />
+    <movie path="build.hxml" />
     <movie fps="0" />
     <movie width="0" />
     <movie height="0" />
-    <movie version="17" />
+    <movie version="19" />
     <movie minorVersion="0" />
     <movie platform="Flash Player" />
     <movie background="#FFFFFF" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
-    <class path="Genome2D-Core\src" />
-    <class path="Genome2D-ContextFlash\src" />
-    <class path="Genome2D-ContextCommon\src" />
+    <class path="." />
   </classpaths>
   <!-- Build options -->
   <build>
@@ -52,7 +50,7 @@
   <options>
     <option showHiddenPaths="False" />
     <option testMovie="OpenDocument" />
-    <option testMovieCommand="$(ProjectDir)\Genome2D-Examples\bin\Example.swf" />
+    <option testMovieCommand="" />
   </options>
   <!-- Plugin storage -->
   <storage />
