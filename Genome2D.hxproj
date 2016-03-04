@@ -49,8 +49,8 @@
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="OpenDocument" />
-    <option testMovieCommand="" />
+    <option testMovie="Custom" />
+    <option testMovieCommand="Example.swf" />
   </options>
   <!-- Plugin storage -->
   <storage />
