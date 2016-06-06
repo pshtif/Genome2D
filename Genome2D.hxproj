@@ -50,7 +50,7 @@
   <options>
     <option showHiddenPaths="False" />
     <option testMovie="Custom" />
-    <option testMovieCommand="Example.swf" />
+    <option testMovieCommand="Genome2D-Examples\bin\Example.swf" />
   </options>
   <!-- Plugin storage -->
   <storage />
