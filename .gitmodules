@@ -16,3 +16,6 @@
 [submodule "Genome2D-Docs"]
 	path = Genome2D-Docs
 	url = https://github.com/pshtif/Genome2D-Docs
+[submodule "Genome2D-Spine"]
+	path = Genome2D-Spine
+	url = https://github.com/pshtif/Genome2D-Spine
