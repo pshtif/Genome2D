@@ -15,7 +15,12 @@
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
-    <class path="." />
+    <class path="Genome2D-Core\src" />
+    <class path="Genome2D-ContextCommon\src" />
+    <class path="Genome2D-ContextFlash\src" />
+    <class path="Genome2D-Examples" />
+    <class path="C:\HaxeToolkit\haxe\lib\nape\2,0,20" />
+    <class path="C:\HaxeToolkit\haxe\lib\box2d\1,2,3" />
   </classpaths>
   <!-- Build options -->
   <build>
