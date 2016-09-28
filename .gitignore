@@ -1,1 +1,4 @@
 bin/Genome2D.swc
+.idea/
+out/
+*.iml
