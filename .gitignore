@@ -2,3 +2,4 @@ bin/Genome2D.swc
 .idea/
 out/
 *.iml
+bin/production/
