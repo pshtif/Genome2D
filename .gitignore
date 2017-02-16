@@ -1,5 +1,6 @@
 bin/Genome2D.swc
 .idea/
+.vscode/
 out/
 *.iml
 bin/production/
