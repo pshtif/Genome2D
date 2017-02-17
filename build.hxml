@@ -1,4 +1,4 @@
 # Just global build file to avoid setting this inside various IDEs
 
-Genome2D-Core/build_swc.hxml
-#Genome2D-Examples/build_examples.hxml
+#Genome2D-Core/build_swc.hxml
+Genome2D-Examples/build_examples.hxml
