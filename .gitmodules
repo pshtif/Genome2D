@@ -19,3 +19,6 @@
 [submodule "Genome2D-Spine"]
 	path = Genome2D-Spine
 	url = https://github.com/pshtif/Genome2D-Spine
+[submodule "Genome2D-ContextUnity"]
+	path = Genome2D-ContextUnity
+	url = https://github.com/pshtif/Genome2D-ContextUnity
