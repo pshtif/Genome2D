@@ -1,0 +1,31 @@
+{
+	"folders": [
+		{
+			"path": "Genome2D-ContextUnity"
+		},
+		{
+			"path": "Genome2D-Spine"
+		},
+		{
+			"path": "Genome2D-ContextHTML"
+		},
+		{
+			"path": "Genome2D-ContextCommon"
+		},
+		{
+			"path": "Genome2D-Core"
+		},
+		{
+			"path": "Genome2D-ContextFlash"
+		},
+		{
+			"path": "Genome2D-Examples"
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			".gitignore": true,
+			"*.md": true
+		}
+	}
+}
